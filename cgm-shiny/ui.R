@@ -1,0 +1,35 @@
+#
+# This is the user-interface definition of a Shiny web application. You can
+# run the application by clicking 'Run App' above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+
+DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
+                                         "RichardSprague_glucose.csv")
+library(shiny)
+
+# Define UI for application that reads a CSV file
+shinyUI(fluidPage(
+
+    # Application title
+    titlePanel("Your CGM Data"),
+
+    # Sidebar with a slider input for number of bins
+    sidebarLayout(
+        sidebarPanel(
+            textInput("ask_filename",
+                        "Librelink CSV file:",
+                      DEFAULT_LIBRELINK_FILE_PATH
+                      ),
+            verbatimTextOutput("csv_file_path")
+        ),
+
+        # Show a plot of the generated distribution
+        mainPanel(
+            dataTableOutput("glucoseTable")
+        )
+    )
+))
