@@ -20,6 +20,8 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
+            fileInput("file1", "Choose CSV File", accept = ".csv"),
+            checkboxInput("header", "Header", TRUE),
             textInput("ask_filename",
                         "Librelink CSV file:",
                       DEFAULT_LIBRELINK_FILE_PATH
@@ -32,6 +34,7 @@ shinyUI(fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
+            plotOutput("glucoseChart"),
             dataTableOutput("glucoseTable")
         )
     )
