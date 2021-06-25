@@ -27,9 +27,7 @@ plot_glucose <- function(glucose_raw, title = "Martha") {
     g + sprague_theme + geom_line(color = "red")  +
         labs(title = title, x = "", y = "mg/mL", subtitle = "Continuous glucose monitoring") +
         scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") +
-        coord_cartesian(xlim = c(now() - days(7), now()),
-                        ylim = c(40, 130),
-        )
+        coord_cartesian(ylim = c(40, 130))
 }
 
 
@@ -57,15 +55,17 @@ shinyServer(function(input, output) {
     message("back to the server")
 
 
-    output$csv_file_path <- renderText(input$ask_filename)
+    output$csv_file_path <- renderTable(input$ask_filename)
 
-    glucose <- reactive(glucose_from_csv(input$ask_filename))
+
+    glucose <- reactive(glucose_from_csv(input$type_filename))
+    glucose_current <- reactive(glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
 
     output$glucoseTable <- renderDataTable(
-         glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ),
+         glucose_current,
          options = list(pageLength = 5))
 
-    output$glucoseChart <- renderPlot(plot_glucose(glucose(), title = input$ask_filename))
+    output$glucoseChart <- renderPlot(plot_glucose(glucose_current(), title = input$ask_filename))
 
 
 })

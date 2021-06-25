@@ -20,13 +20,13 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            fileInput("file1", "Choose CSV File", accept = ".csv"),
+            fileInput("ask_filename", "Choose CSV File", accept = ".csv"),
             checkboxInput("header", "Header", TRUE),
-            textInput("ask_filename",
+            textInput("type_filename",
                         "Librelink CSV file:",
                       DEFAULT_LIBRELINK_FILE_PATH
                       ),
-            verbatimTextOutput("csv_file_path"),
+            tableOutput("csv_file_path"),
             dateRangeInput("daterange1", "Date range:",
                            start = "2021-05-30",
                            end   = "2021-06-25"),
