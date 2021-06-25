@@ -10,6 +10,7 @@
 
 library(shiny)
 library(tidyverse)
+library(lubridate)
 
 glucose_from_csv <- function(csv_filepath){
     libre_raw <- readr::read_csv(csv_filepath, col_types = "cccdddddcddddcddddd",
@@ -37,10 +38,13 @@ shinyServer(function(input, output) {
 
     output$csv_file_path <- renderText(input$ask_filename)
 
-    output$glucose <- reactive(glucose_from_csv(input$ask_filename))
+    glucose <- reactive(glucose_from_csv(input$ask_filename))
 
     output$glucoseTable <- renderDataTable(
-         head(glucose_from_csv(input$ask_filename)))
+         glucose_from_csv(input$ask_filename) %>%
+                  filter(time>input$daterange1[1]))
+
+
 })
 
 

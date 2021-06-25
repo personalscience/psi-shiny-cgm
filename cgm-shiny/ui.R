@@ -24,7 +24,10 @@ shinyUI(fluidPage(
                         "Librelink CSV file:",
                       DEFAULT_LIBRELINK_FILE_PATH
                       ),
-            verbatimTextOutput("csv_file_path")
+            verbatimTextOutput("csv_file_path"),
+            dateRangeInput("daterange1", "Date range:",
+                           start = "2021-05-30",
+                           end   = "2021-06-25"),
         ),
 
         # Show a plot of the generated distribution
