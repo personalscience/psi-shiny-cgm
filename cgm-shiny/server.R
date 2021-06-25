@@ -41,8 +41,7 @@ shinyServer(function(input, output) {
     glucose <- reactive(glucose_from_csv(input$ask_filename))
 
     output$glucoseTable <- renderDataTable(
-         glucose_from_csv(input$ask_filename) %>%
-                  filter(time>input$daterange1[1]))
+         glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
 
 
 })
