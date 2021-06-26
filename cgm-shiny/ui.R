@@ -35,6 +35,7 @@ shinyUI(fluidPage(
         # Show a plot of the glucose levels
         mainPanel(
             plotOutput("glucoseChart"),
+            #plotGlucoseUI("glucose1"),
             dataTableOutput("glucoseTable")
         )
     )
