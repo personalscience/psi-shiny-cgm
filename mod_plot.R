@@ -1,4 +1,4 @@
-# text module ----
+# module to plot glucose values
 
 DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
                                          "RichardSprague_glucose.csv")
@@ -35,27 +35,17 @@ glucose_from_csv <- function(csv_filepath){
 libreview_ui <- function(id) {
 
   fluidRow(
-    textOutput(NS(id, "text")),
     plotOutput(NS(id, "libreview1"))
   )
 
 }
 
-text_server <- function(id, df, glucose_df, vbl, threshhold) {
+test_server <- function(id,  glucose_df) {
 
   moduleServer(id, function(input, output, session) {
 
-    n <- reactive({sum(df()[[vbl]] > threshhold)})
-    output$text <- renderText({
-      paste("In this month",
-            vbl,
-            "exceeded the average daily threshhold of",
-            threshhold,
-            "a total of",
-            n(),
-            "days")
-    })
-    output$glucoseChart <- renderPlot(plot_glucose(glucose_df))
+
+    output$libreview1 <- renderPlot(plot_glucose(glucose_df))
 
   })
 
@@ -63,11 +53,11 @@ text_server <- function(id, df, glucose_df, vbl, threshhold) {
 
 cgm_demo <- function() {
 
-  df <- data.frame(day = 1:30, arr_delay = 1:30)
+
   glucose_df <- glucose_from_csv(DEFAULT_LIBRELINK_FILE_PATH) %>% head(2000)
   ui <- fluidPage(libreview_ui("x"))
   server <- function(input, output, session) {
-    text_server("x", reactive({df}), glucose_df, vbl = "arr_delay", threshhold =  15)
+    test_server("x", glucose_df)
   }
   shinyApp(ui, server)
 
