@@ -62,7 +62,7 @@ shinyServer(function(input, output) {
     glucose_current <- reactive(glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
 
     output$glucoseTable <- renderDataTable(
-         glucose_current,
+         glucose_current(),
          options = list(pageLength = 5))
 
     output$glucoseChart <- renderPlot(plot_glucose(glucose_current(), title = input$ask_filename))
