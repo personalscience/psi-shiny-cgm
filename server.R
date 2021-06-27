@@ -14,24 +14,6 @@ library(shiny)
 library(tidyverse)
 library(lubridate)
 
-library(ggthemes)
-library(showtext)
-font_add_google("Montserrat")
-showtext_auto()
-
-
-sprague_theme <-   theme(text = element_text(family = "Montserrat", face = "bold", size = 15),
-                         axis.text.x = element_text(size = 15, angle = 90, hjust = 1),
-                         legend.title = element_blank())
-
-plot_glucose <- function(glucose_raw, title = "Martha") {
-    g = ggplot(data = glucose_raw, aes(x=time, y = value) )
-    g + sprague_theme + geom_line(color = "red")  +
-        labs(title = title, x = "", y = "mg/mL", subtitle = "Continuous glucose monitoring") +
-        scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") +
-        coord_cartesian(ylim = c(40, 130))
-}
-
 
 glucose_from_csv <- function(csv_filepath){
     libre_raw <- readr::read_csv(csv_filepath, col_types = "cccdddddcddddcddddd",

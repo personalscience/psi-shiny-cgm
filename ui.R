@@ -24,7 +24,8 @@ shinyUI(fluidPage(
             checkboxInput("header", "Header", TRUE),
             textInput("type_filename",
                         "Librelink CSV file:",
-                      DEFAULT_LIBRELINK_FILE_PATH
+                      DEFAULT_LIBRELINK_FILE_PATH,
+                      placeholder = "Enter a valid Libreview CSV file"
                       ),
 
             dateRangeInput("daterange1", "Date range:",
@@ -36,7 +37,6 @@ shinyUI(fluidPage(
         mainPanel(
             # plotOutput("glucoseChart"),
             libreviewUI("modChart"),
-            #plotGlucoseUI("glucose1"),
             dataTableOutput("glucoseTable")
         )
     )
