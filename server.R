@@ -8,6 +8,8 @@
 #
 
 
+
+
 library(shiny)
 library(tidyverse)
 library(lubridate)
@@ -65,7 +67,8 @@ shinyServer(function(input, output) {
          glucose_current(),
          options = list(pageLength = 5))
 
-    output$glucoseChart <- renderPlot(plot_glucose(glucose_current(), title = input$ask_filename))
+    #output$glucoseChart <- renderPlot(plot_glucose(glucose_current(), title = input$ask_filename))
+    mod_cgm_plot_server("modChart", glucose_current())
 
 
 })

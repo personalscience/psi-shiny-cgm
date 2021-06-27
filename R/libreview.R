@@ -1,5 +1,16 @@
 # module to plot glucose values
 
+library(ggthemes)
+library(showtext)
+font_add_google("Montserrat")
+showtext_auto()
+
+
+sprague_theme <-   theme(text = element_text(family = "Montserrat", face = "bold", size = 15),
+                         axis.text.x = element_text(size = 15, angle = 90, hjust = 1),
+                         legend.title = element_blank())
+
+
 DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
                                          "RichardSprague_glucose.csv")
 
@@ -32,20 +43,19 @@ glucose_from_csv <- function(csv_filepath){
 }
 
 
-libreview_ui <- function(id) {
+libreviewUI <- function(id) {
 
-  fluidRow(
-    plotOutput(NS(id, "libreview1"))
+  tagList(
+    plotOutput(NS(id, "libreview"))
   )
 
 }
 
-test_server <- function(id,  glucose_df) {
+mod_cgm_plot_server <- function(id,  glucose_df) {
 
   moduleServer(id, function(input, output, session) {
 
-
-    output$libreview1 <- renderPlot(plot_glucose(glucose_df))
+    output$libreview <- renderPlot(plot_glucose(glucose_df))
 
   })
 
@@ -55,12 +65,12 @@ cgm_demo <- function() {
 
 
   glucose_df <- glucose_from_csv(DEFAULT_LIBRELINK_FILE_PATH) %>% head(2000)
-  ui <- fluidPage(libreview_ui("x"))
+  ui <- fluidPage(libreviewUI("x"))
   server <- function(input, output, session) {
-    test_server("x", glucose_df)
+    mod_cgm_plot_server("x", glucose_df)
   }
   shinyApp(ui, server)
 
 }
 
-cgm_demo()
+
