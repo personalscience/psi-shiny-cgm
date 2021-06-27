@@ -12,6 +12,15 @@ library(shiny)
 library(tidyverse)
 library(lubridate)
 
+library(ggthemes)
+library(showtext)
+font_add_google("Montserrat")
+showtext_auto()
+
+
+sprague_theme <-   theme(text = element_text(family = "Montserrat", face = "bold", size = 15),
+                         axis.text.x = element_text(size = 15, angle = 90, hjust = 1),
+                         legend.title = element_blank())
 
 plot_glucose <- function(glucose_raw, title = "Martha") {
     g = ggplot(data = glucose_raw, aes(x=time, y = value) )
