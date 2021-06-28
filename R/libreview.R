@@ -1,5 +1,6 @@
 # module to plot glucose values
 
+library(tidyverse)
 library(ggthemes)
 library(showtext)
 font_add_google("Montserrat")

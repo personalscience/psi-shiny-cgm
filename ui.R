@@ -14,6 +14,11 @@ library(shiny)
 # Define UI for application that reads a CSV file
 shinyUI(fluidPage(
 
+
+    # Application title
+    titlePanel("Personal Science Experiments", windowTitle = "Personal Science, Inc."),
+    tags$a(href="https://personalscience.com", "More details"),
+
     # Application title
     titlePanel("Your CGM Data"),
 
