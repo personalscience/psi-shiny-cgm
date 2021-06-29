@@ -5,3 +5,21 @@ This is an R Shiny app that will plot the CGM results from a Freestyle Libre Lib
 Enter the filepath to your valid Libreview CSV file and the app will draw a simple plot.
 
 ![](images/paste-CF3A1F9D.png)
+
+# Configuration
+
+To use the database features, you'll need the R `config` package and a `config.yml` file someplace in your path. I keep mine under `~` and it has the following lines:
+
+``` yaml
+local:
+  dataconnection:
+    driver: !expr RPostgres::Postgres()
+    host: "localhost"
+    user: "postgres"
+    password: <password for your local database>
+    port: 5432
+    dbname: 'qsdb'
+    glucose_table: 'glucose_records'
+   
+   
+```

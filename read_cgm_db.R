@@ -11,9 +11,9 @@ library(DBI)
 
 library(lubridate)
 
-USER_ID = 13
+USER_ID = 1234
 
-Sys.setenv(R_CONFIG_ACTIVE = "p4mi")
+Sys.setenv(R_CONFIG_ACTIVE = "local")
 
 conn_args <- config::get("dataconnection")
 conn_args
@@ -31,12 +31,12 @@ con <- DBI::dbConnect(drv = conn_args$driver,
 DBI::dbListTables(con)
 
 
-glucose_df <- tbl(con, "glucoses_glucose") %>% select(-created,-modified) %>%
-  filter(user_id == USER_ID & record_date > "2019-11-01") %>% collect()# & top_n(record_date,2))# %>%
+glucose_df <- tbl(con, "glucose_records") %>%
+  filter(user_id == USER_ID & time > "2019-11-01") %>% collect()# & top_n(record_date,2))# %>%
 
-glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(record_date) + record_time, Sys.timezone()),
+glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(time), Sys.timezone()),
                                         scan = value, hist = value, strip = NA, value = value,
-                                        food = as.character(stringr::str_match(notes,"Notes=.*")),
+                                        food = food,
                                         user_id = user_id)
 
 notes_df <- tbl(con, "notes_records") %>%   filter(user_id == USER_ID ) %>%
