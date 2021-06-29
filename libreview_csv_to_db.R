@@ -34,7 +34,7 @@ read_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
 
 # returns a dataframe of glucose values for user_id ID
 read_glucose <- function(conn_args=config::get("dataconnection"),
-                         ID=13,
+                         ID=1234,
                          fromDate="2019-11-01"){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
@@ -45,7 +45,8 @@ read_glucose <- function(conn_args=config::get("dataconnection"),
                         password = conn_args$password)
 
 
-  glucose_df <- tbl(con, conn_args$glucose_table) %>%  collect()# & top_n(record_date,2))# %>%
+  glucose_df <- tbl(con, conn_args$glucose_table) %>%
+    filter(user_id %in% ID & time >= fromDate) %>% collect()# & top_n(record_date,2))# %>%
 
   glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(time), Sys.timezone()),
                                           scan = value, hist = value, strip = NA, value = value,

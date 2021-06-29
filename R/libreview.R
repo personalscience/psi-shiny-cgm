@@ -24,7 +24,7 @@ plot_glucose <- function(glucose_raw, title = "Martha") {
 }
 
 
-glucose_from_csv <- function(csv_filepath){
+libreview_glucose_from_csv <- function(csv_filepath){
   libre_raw <- readr::read_csv(csv_filepath, col_types = "cccdddddcddddcddddd",
                                skip = 1)
   libre_raw$`Device Timestamp` <- lubridate::force_tz(lubridate::mdy_hm(libre_raw$`Device Timestamp`), Sys.timezone())
@@ -65,7 +65,7 @@ mod_cgm_plot_server <- function(id,  glucose_df) {
 cgm_demo <- function() {
 
 
-  glucose_df <- glucose_from_csv(DEFAULT_LIBRELINK_FILE_PATH) %>% head(2000)
+  glucose_df <- libreview_glucose_from_csv(DEFAULT_LIBRELINK_FILE_PATH) %>% head(2000)
   ui <- fluidPage(libreviewUI("x"))
   server <- function(input, output, session) {
     mod_cgm_plot_server("x", glucose_df)
