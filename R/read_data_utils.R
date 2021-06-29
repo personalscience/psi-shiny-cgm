@@ -8,6 +8,8 @@
 library(tidyverse)
 library(lubridate)
 
+DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
+                                         "RichardSprague_glucose.csv")
 
 #` read a valid libreview CSV file and return a dataframe and new user id`
 read_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),

@@ -9,8 +9,7 @@
 
 Sys.setenv(R_CONFIG_ACTIVE = "local")
 
-DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
-                                         "RichardSprague_glucose.csv")
+
 library(shiny)
 
 # Define UI for application that reads a CSV file

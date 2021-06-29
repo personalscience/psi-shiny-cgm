@@ -4,54 +4,74 @@
 library(tidyverse)
 library(lubridate)
 
-#` read a valid libreview CSV file and return a dataframe and new user id`
-read_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
-                                              "General","Health",
-                                              "RichardSprague_glucose.csv"),
-                               user_id = 1234) {
+
+source("R/read_data_utils.R")
 
 
-  glucose_raw <-
-    readr::read_csv(file, skip = 1, col_types = "cccdddddcddddcddddd") %>%
-    transmute(
-      timestamp = lubridate::mdy_hm(`Device Timestamp`),
-      record_type = `Record Type`,
-      glucose_historic = `Historic Glucose mg/dL`,
-      glucose_scan = `Scan Glucose mg/dL`,
-      strip_glucose = `Strip Glucose mg/dL`,
-      notes = Notes
+
+# set the active configuration globally via Renviron.site or Rprofile.site
+Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
+# Sys.setenv(R_CONFIG_ACTIVE = "cloud") # save to cloud
+# Sys.setenv(R_CONFIG_ACTIVE = "default") # save to sqlite
+# Sys.setenv(R_CONFIG_ACTIVE = "cloud")
+
+
+#' Most recent date in the database for a given user
+#' @param user_id user ID
+#' @return a date object representing the most recent record in the database for this user. NA if there are no records.
+max_date_for_user <-
+  function(conn_args = config::get("dataconnection"),
+           user_id = 1234,
+           fromDate = "2019-11-01") {
+    con <- DBI::dbConnect(
+      drv = conn_args$driver,
+      user = conn_args$user,
+      host = conn_args$host,
+      port = conn_args$port,
+      dbname = conn_args$dbname,
+      password = conn_args$password
     )
 
-  glucose_df <- glucose_raw  %>% transmute(time = `timestamp`,
-                                           scan = glucose_scan, hist = glucose_historic, strip = strip_glucose, value = glucose_historic,
-                                           food = notes) #as.character(stringr::str_match(notes,"Notes=.*")))
+    ID = user_id
+    glucose_df <- tbl(con, conn_args$glucose_table) %>%
+      filter(user_id %in% ID & time >= fromDate)
 
-  glucose_df %>% add_column(user_id = user_id)
+    # maxDate <-
+    #   DBI::dbGetQuery(con, "select max(\"time\") from glucose_records;")$max
 
+    maxDate <-
+      tbl(con, conn_args$glucose_table) %>% filter(user_id == ID &
+                                                     time == max(time)) %>% pull(time)
+
+
+    DBI::dbDisconnect(con)
+
+    return(if (length(maxDate > 0))
+      maxDate
+      else
+        NA)
+
+
+  }
+
+#' New Libreview records
+#' @param libreview_df a valid Libreview dataframe as read directly from CSV
+#' @param user_id user id
+#' @return dataframe of only those Libreview records that are new for this user_id
+new_libreview_csv_records_for_user <- function(libreview_df = read_libreview_csv(), user_id = 1234) {
+
+  md <- max_date_for_user(user_id =user_id)
+
+  new_records <-
+    libreview_df %>% dplyr::filter(time > if_else(is.na(md),
+                                                  min(libreview_df$time),
+                                                  max(libreview_df$time)))
+  return(new_records)
 }
 
-#read_librelink()
+demo_libreview_to_db <- function()
+{
+  message("showing only those Libreview records that are new")
+  new_libreview_csv_records_for_user(user_id=1235)
 
-# returns a dataframe of glucose values for user_id ID
-read_glucose <- function(conn_args=config::get("dataconnection"),
-                         ID=1234,
-                         fromDate="2019-11-01"){
-
-  con <- DBI::dbConnect(drv = conn_args$driver,
-                        user = conn_args$user,
-                        host = conn_args$host,
-                        port = conn_args$port,
-                        dbname = conn_args$dbname,
-                        password = conn_args$password)
-
-
-  glucose_df <- tbl(con, conn_args$glucose_table) %>%
-    filter(user_id %in% ID & time >= fromDate) %>% collect()# & top_n(record_date,2))# %>%
-
-  glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(time), Sys.timezone()),
-                                          scan = value, hist = value, strip = NA, value = value,
-                                          food = food,
-                                          user_id = user_id)
-
-  return(glucose_raw)
 }

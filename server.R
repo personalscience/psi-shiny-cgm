@@ -18,7 +18,7 @@ library(lubridate)
 
 # Define server logic required to display CGM information
 shinyServer(function(input, output) {
-    message("back to the server")
+    message("Server is running...")
 
 
     output$csv_file_path <- renderTable(input$ask_filename)
@@ -32,7 +32,6 @@ shinyServer(function(input, output) {
          glucose_current(),
          options = list(pageLength = 5))
 
-    #output$glucoseChart <- renderPlot(plot_glucose(glucose_current(), title = input$ask_filename))
     mod_cgm_plot_server("modChart", glucose_current())
 
 
