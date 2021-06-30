@@ -52,11 +52,11 @@ libreviewUI <- function(id) {
 
 }
 
-mod_cgm_plot_server <- function(id,  glucose_df) {
+mod_cgm_plot_server <- function(id,  glucose_df, title="Name") {
 
   moduleServer(id, function(input, output, session) {
 
-    output$libreview <- renderPlot(plot_glucose(glucose_df))
+    output$libreview <- renderPlot(plot_glucose(glucose_df, title))
 
   })
 
