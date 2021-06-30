@@ -26,8 +26,7 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            fileInput("ask_filename", "Choose CSV File", accept = ".csv"),
-            checkboxInput("header", "Header", TRUE),
+            csvFileUI("datafile", "Libreview CSV file"),
             textInput("type_filename",
                         "Librelink CSV file:",
                       DEFAULT_LIBRELINK_FILE_PATH,

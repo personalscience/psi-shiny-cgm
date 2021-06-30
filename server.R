@@ -23,6 +23,7 @@ shinyServer(function(input, output) {
 
     output$csv_file_path <- renderTable(input$ask_filename)
 
+    datafile <- csvFileServer("datafile",stringsAsFactors = FALSE)
 
     #glucose <- reactive(read_libreview_csv(input$type_filename))
     glucose <- reactive(read_glucose_db())
