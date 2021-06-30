@@ -47,10 +47,40 @@ csvFileServer <- function(id, stringsAsFactors) {
   )
 }
 
+# Module server function
+csvFilePathServer <- function(id, stringsAsFactors) {
+  moduleServer(
+    id,
+    ## Below is the module function
+    function(input, output, session) {
+      # The selected file, if any
+      userFile <- reactive({
+        # If no file is selected, don't do anything
+        validate(need(input$file, message = FALSE))
+        input$file
+      })
+
+      # The user's data, parsed into a data frame
+      dataframe <- reactive({userFile() })
+
+      # We can run observers in here if we want to
+      observe({
+        msg <- sprintf("File %s was uploaded", userFile()$name)
+        cat(msg, "\n")
+      })
+
+      # Return the reactive that yields the data frame
+      return(dataframe)
+    }
+  )
+}
+
 demo_read_CSV <- function () {
   ui <- fluidPage(
     sidebarLayout(
-      sidebarPanel(csvFileUI("datafile", "Libreview CSV file")
+      sidebarPanel(csvFileUI("datafile", "Libreview CSV file"),
+                   textOutput("filepath1"),
+                   textOutput("csv_filename")
                    ),
       mainPanel(
         dataTableOutput("table")
@@ -60,7 +90,12 @@ demo_read_CSV <- function () {
 
   server <- function(input, output, session) {
     datafile <- csvFileServer("datafile",stringsAsFactors = FALSE)
+   datafilepath <- csvFilePathServer("datafile")
 
+
+
+    output$csv_filename <- renderText(sprintf("File %s was here",
+                                              datafilepath()$name))
 
     output$table <- renderDataTable({
       datafile()
@@ -70,5 +105,5 @@ demo_read_CSV <- function () {
   shinyApp(ui, server)
 }
 
-
+#demo_read_CSV()
 
