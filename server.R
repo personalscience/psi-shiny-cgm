@@ -25,13 +25,20 @@ shinyServer(function(input, output) {
 
     datafile <- csvFileServer("datafile",stringsAsFactors = FALSE)
 
+    output$show_file <- renderText("this is the filename")
+
     #glucose <- reactive(read_libreview_csv(input$type_filename))
     glucose <- reactive(read_glucose_db())
     glucose_current <- reactive(glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
 
-    output$glucoseTable <- renderDataTable(
-         glucose_current(),
-         options = list(pageLength = 5))
+    # output$glucoseTable <- renderDataTable(
+    #      glucose_current(),
+    #      options = list(pageLength = 5))
+    #
+
+    output$glucoseTable <- renderDataTable({
+        datafile()
+    })
 
     mod_cgm_plot_server("modChart", glucose_current())
 

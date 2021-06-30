@@ -32,6 +32,7 @@ shinyUI(fluidPage(
                       DEFAULT_LIBRELINK_FILE_PATH,
                       placeholder = "Enter a valid Libreview CSV file"
                       ),
+            textOutput("show_file"),
 
             dateRangeInput("daterange1", "Date range:",
                            start = "2021-05-30",
