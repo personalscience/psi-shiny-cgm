@@ -38,8 +38,11 @@ read_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
 }
 
 
-#` returns a dataframe of glucose values for user_id ID
-#` reads from the current default database
+#' returns a dataframe of glucose values for user_id ID
+#' @param fromDate a string representing the date from which you want to read the glucose values
+#' @param ID ID for a specific user in the database.
+#' @return a dataframe (tibble) with the full Libreview results since fromDate
+#' reads from the current default database
 read_glucose_db <- function(conn_args=config::get("dataconnection"),
                          ID=1234,
                          fromDate="2019-11-01"){
