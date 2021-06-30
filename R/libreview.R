@@ -14,8 +14,11 @@ sprague_theme <-   theme(text = element_text(family = "Montserrat", face = "bold
 
 DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
                                          "RichardSprague_glucose.csv")
-
-plot_glucose <- function(glucose_raw, title = "Martha") {
+#' Plot of a valid CGM file.
+#' @param glucose_raw dataframe of a valid CGM data stream
+#' @param title string to display on ggplot
+#' @return ggplot object
+plot_glucose <- function(glucose_raw, title = "Name") {
   g = ggplot(data = glucose_raw, aes(x=time, y = value) )
   g + sprague_theme + geom_line(color = "red")  +
     labs(title = title, x = "", y = "mg/mL", subtitle = "Continuous glucose monitoring") +
@@ -56,7 +59,8 @@ mod_cgm_plot_server <- function(id,  glucose_df, title="Name") {
 
   moduleServer(id, function(input, output, session) {
 
-    output$libreview <- renderPlot(plot_glucose(glucose_df, title))
+    g <- reactive(plot_glucose(glucose_df, title))
+    output$libreview <- renderPlot(g())
 
   })
 

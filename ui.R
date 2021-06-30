@@ -23,7 +23,7 @@ shinyUI(fluidPage(
     # Application title
     titlePanel("Your CGM Data"),
 
-    # Sidebar with a slider input for number of bins
+    # Sidebar with file picker
     sidebarLayout(
         sidebarPanel(
             csvFileUI("datafile", "Libreview CSV file"),
@@ -41,8 +41,7 @@ shinyUI(fluidPage(
 
         # Show a plot of the glucose levels
         mainPanel(
-            # plotOutput("glucoseChart"),
-            libreviewUI("modChart"),
+            plotOutput("glucoseChart"),
             dataTableOutput("glucoseTable")
         )
     )
