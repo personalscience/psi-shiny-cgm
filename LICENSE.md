@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2021 psi-shiny-cgm authors
+Copyright (c) 2021 psiCGM authors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
