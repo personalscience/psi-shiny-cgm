@@ -16,8 +16,10 @@ library(lubridate)
 
 
 
-# Define server logic required to display CGM information
-shinyServer(function(input, output) {
+#' Define server logic required to display CGM information
+#' @import shiny
+#' @import magrittr dplyr
+server <- function(input, output) {
     message("Server is running...")
 
     datafilepath <- csvFilePathServer("datafile")
@@ -37,8 +39,7 @@ shinyServer(function(input, output) {
                                                    datafilepath()$name))
 
     mod_cgm_plot_server("modChart", glucose_current(), datafilepath()$name)
-
-})
+}
 
 
 

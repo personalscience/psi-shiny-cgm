@@ -5,13 +5,18 @@
 # Note: only works with p4mi database (or any db that includes a user_id)
 # Sys.setenv(R_CONFIG_ACTIVE = "p4mi")
 
-library(tidyverse)
-library(lubridate)
+# library(tidyverse)
+# library(lubridate)
 
 DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
                                          "RichardSprague_glucose.csv")
 
-#` read a valid libreview CSV file and return a dataframe and new user id`
+#' read a valid libreview CSV file and return a dataframe and new user id`
+#' @title Read a standard format Libreview CSV file
+#' @return a canonical glucose value dataframe
+#' @export
+#' @import readr magrittr tibble
+#' @importFrom lubridate mdy_hm
 read_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
                                               "General","Health",
                                               "RichardSprague_glucose.csv"),

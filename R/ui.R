@@ -12,8 +12,10 @@ Sys.setenv(R_CONFIG_ACTIVE = "local")
 
 library(shiny)
 
-# Define UI for application that reads a CSV file
-shinyUI(fluidPage(
+#' Define UI for application that reads a CSV file
+#' @import shiny
+#' @import magrittr dplyr
+ui <- fluidPage(
 
 
     # Application title
@@ -45,4 +47,5 @@ shinyUI(fluidPage(
             dataTableOutput("glucoseTable")
         )
     )
-))
+)
+
