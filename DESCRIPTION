@@ -15,8 +15,11 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     dplyr,
+    ggplot2,
     lubridate,
     magrittr,
     readr,
     shiny,
     tibble
+Depends: 
+    R (>= 2.10)

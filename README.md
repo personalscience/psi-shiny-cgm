@@ -4,6 +4,15 @@ This is an R Shiny app that will plot the CGM results from a Freestyle Libre Lib
 
 Enter the filepath to your valid Libreview CSV file and the app will draw a simple plot.
 
+# Get Started
+
+Type `^-SHIFT-L` or:
+
+``` r
+> devtools::load_all(".")
+> run_app()
+```
+
 ![](images/paste-CF3A1F9D.png)
 
 # Configuration
