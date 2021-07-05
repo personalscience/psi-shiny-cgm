@@ -11,13 +11,14 @@
 DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
                                          "RichardSprague_glucose.csv")
 
-#' read a valid libreview CSV file and return a dataframe and new user id`
+#' Read a valid libreview CSV file and return a dataframe and new user id
 #' @title Read a standard format Libreview CSV file
 #' @return a canonical glucose value dataframe
+#' @param file path to a valid Libreview CSV file
 #' @export
 #' @import readr magrittr tibble
-#' @importFrom lubridate mdy_hm
-read_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
+#' @import lubridate
+glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
                                               "General","Health",
                                               "RichardSprague_glucose.csv"),
                                user_id = 1234) {

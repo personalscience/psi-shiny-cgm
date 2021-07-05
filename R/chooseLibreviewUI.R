@@ -16,7 +16,10 @@ csvFileUI <- function(id, label = "CSV file") {
 }
 
 
-# Module server function
+#' Module server function
+#'
+#' @return a module server that can read a csv file
+#' @import readr
 csvFileServer <- function(id, stringsAsFactors) {
   moduleServer(
     id,
