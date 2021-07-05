@@ -28,12 +28,8 @@ ui <- fluidPage(
     # Sidebar with file picker
     sidebarLayout(
         sidebarPanel(
-            csvFileUI("datafile", "Libreview CSV file"),
-            textInput("type_filename",
-                        "Librelink CSV file:",
-                      DEFAULT_LIBRELINK_FILE_PATH,
-                      placeholder = "Enter a valid Libreview CSV file"
-                      ),
+            psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
+
             textOutput("show_file"),
 
             dateRangeInput("daterange1", "Date range:",

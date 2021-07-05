@@ -22,7 +22,7 @@ library(lubridate)
 server <- function(input, output) {
     message("Server is running...")
 
-    datafilepath <- csvFilePathServer("datafile")
+    datafilepath <- psiCGM:::csvFilePathServer("datafile")
 
     output$show_file <- renderText(datafilepath()$name)
 
@@ -35,10 +35,10 @@ server <- function(input, output) {
         glucose_current()
     })
 
-    output$glucoseChart <- renderPlot(plot_glucose(glucose_current(),
+    output$glucoseChart <- renderPlot(psiCGM:::plot_glucose(glucose_current(),
                                                    datafilepath()$name))
 
-    mod_cgm_plot_server("modChart", glucose_current(), datafilepath()$name)
+    psiCGM:::mod_cgm_plot_server("modChart", glucose_current(), datafilepath()$name)
 }
 
 
