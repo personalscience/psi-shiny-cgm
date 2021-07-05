@@ -49,7 +49,7 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
 #' @param ID ID for a specific user in the database.
 #' @return a dataframe (tibble) with the full Libreview results since fromDate for user_id
 #' @description Reads from the current default database the glucose values for user_id ID.
-read_glucose_db <- function(conn_args=config::get("dataconnection"),
+glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
                          ID=1234,
                          fromDate="2019-11-01"){
 
@@ -118,10 +118,9 @@ read_notes <- function(conn_args=config::get("dataconnection"),
 }
 
 
-# returns df of glucose values for ID after startDate
-# eg. read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))
-
-read_glucose_for_users_at_time <- function(conn_args=config::get("dataconnection"),
+#' returns df of glucose values for ID after startDate
+#' eg. read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))
+glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection"),
                                           ID=13,
                                           startTime=now()-hours(36),
                                           timelength=120){
@@ -155,8 +154,8 @@ read_glucose_for_users_at_time <- function(conn_args=config::get("dataconnection
 }
 
 
-# return rows where food matches food
-# eg. records_with_food(ID=8, foodname="apple")
+#' return rows where food matches food
+#' eg. records_with_food(ID=8, foodname="apple")
 records_with_food <- function(conn_args=config::get("dataconnection"),
                               ID=13,
                               foodname = "banana"){

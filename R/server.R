@@ -27,7 +27,7 @@ server <- function(input, output) {
     output$show_file <- renderText(datafilepath()$name)
 
     glucose <- reactive(glucose_df_from_libreview_csv(datafilepath()$datapath))
-    #glucose <- reactive(read_glucose_db())
+    #glucose <- reactive(glucose_df_from_db())
     glucose_current <- reactive(glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
 
 
