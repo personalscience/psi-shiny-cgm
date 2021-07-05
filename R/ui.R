@@ -7,7 +7,6 @@
 #    http://shiny.rstudio.com/
 #
 
-Sys.setenv(R_CONFIG_ACTIVE = "local")
 
 
 library(shiny)

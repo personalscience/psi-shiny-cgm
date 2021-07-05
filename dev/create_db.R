@@ -17,6 +17,8 @@ Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
 conn_args <- config::get("dataconnection")
 conn_args
 
+#' List all objects in the current PSI database
+#' @import DBI
 psi_list_objects <-
   function(conn_args = config::get("dataconnection")) {
     con <- DBI::dbConnect(
@@ -31,10 +33,10 @@ psi_list_objects <-
   dbName <- conn_args$dbname
   dbHost <- conn_args$host
 
-  objects <- dbListObjects(con)
-  tables <- dbListTables(con)
+  objects <- DBI::dbListObjects(con)
+  tables <- DBI::dbListTables(con)
 
-  dbDisconnect(con)
+  DBI::dbDisconnect(con)
   return(list(dbName=dbName, dbHost=dbHost, objects=objects, tables=tables))
 
 }
@@ -54,7 +56,7 @@ psi_glucose_table <-
 
     glucose_df <- tbl(con, "glucose_records") %>% collect()
 
-    dbDisconnect(con)
+    DBI::dbDisconnect(con)
 
     return(glucose_df)
 
