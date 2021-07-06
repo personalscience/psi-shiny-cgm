@@ -23,10 +23,11 @@ ui <- fluidPage(
 
     # Application title
     titlePanel("Your CGM Data"),
-
+    #psiCGM:::userSelectionUI("test1"),
     # Sidebar with file picker
     sidebarLayout(
         sidebarPanel(
+
             psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
 
             textOutput("show_file"),

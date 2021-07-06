@@ -4,40 +4,48 @@
 
 userSelectionUI <- function(id) {
 
-  fluidPage(
-    tagList(
-      textOutput(NS(id, "user"))
-    )
-    # ,
-    #
-    # textInput(NS(id,"enter_name"))
-  )
 
-  # tagList(
-  #   textInput(NS(id, "enter_name"))
-  # )
+  wellPanel(
+    h2("List of Users"),
+      textOutput(NS(id, "user")),
+     textInput(NS(id,"enter_text"),"Enter User Number", "0000"),
+      actionButton(NS(id,"press_button"),"Add user"),
+
+
+
+
+  )
 
 }
 
 mod_user_selection_server <- function(id, username="Name") {
 
-  moduleServer(id, function(input, output, session) {
+  moduleServer(id,
+               function(input, output, session) {
+                 userlist <- reactiveVal(username)
 
+                 observeEvent(input$press_button, {
+                   userlist <- append(userlist(),input$enter_text)
+                 })
 
-    output$user <- renderText(username)
+                # add_user_button<- reactive(input$press_button)
 
-  })
+                 output$user <- renderText(paste(input$enter_text,"is", paste(userlist(), collapse = ", ")))
+                 }
+  )
 
 }
 
 
+
+
 user_selection_demo <- function() {
 
-
+ userlist <- c("1234","789")
 
   ui <- userSelectionUI("x")
   server <- function(input, output, session) {
-    mod_user_selection_server("x", username = "My name")
+    mod_user_selection_server("x", username = userlist)
   }
   shinyApp(ui, server)
 

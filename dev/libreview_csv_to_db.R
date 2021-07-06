@@ -71,9 +71,10 @@ new_libreview_csv_records_for_user <- function(libreview_df = psiCGM:::glucose_d
   return(new_records)
 }
 
-demo_libreview_to_db <- function()
+demo_libreview_to_db <- function(csv_df = psiCGM:::glucose_df_from_libreview_csv(user_id=1235),
+                                 user_id = 1235)
 {
   message("showing only those Libreview records that are new")
-  new_libreview_csv_records_for_user(psiCGM:::glucose_df_from_libreview_csv(user_id=1235), user_id=1235)
+  new_libreview_csv_records_for_user(csv_df, user_id)
 
 }
