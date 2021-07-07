@@ -11,6 +11,7 @@ userSelectionUI <- function(id) {
   sidebarLayout(
   sidebarPanel(
     h3("Input values"),
+    actionButton(ns("pull_db"), "Pull user from DB"),
     numericInput(ns("enter_main_user"), label = "User Number:", value = 1234),
     textOutput(ns("user"))
   ),
@@ -21,37 +22,25 @@ userSelectionUI <- function(id) {
 }
 
 #' Shiny module server to show a Libreview plot from the database
-mod_db_selection_server <- function(id, username="Name") {
+mod_db_selection_server <- function(id, username="Default Name") {
 
   moduleServer(id,
                function(input, output, session) {
-                 userlist <- username
-                 main_user_table <- reactive(psiCGM:::glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
-                                                                                    user_id = 1235))
-
-                 observeEvent(input$press_button, {
-                   userlist <- append(userlist,input$enter_text)
-                   message(paste("button pressed:", paste(userlist, collapse = ",")))
-                 })
-
                  output$user <- reactive(input$enter_main_user) #renderText(paste(input$enter_text,"is", paste(userlist, collapse = ", ")))
-                 output$main_user_table <- renderDataTable({
-                   if (input$pull_db != 0)
-                   { message(paste("pulled from db:", paste(input$enter_main_user)))
-                     return(psiCGM:::glucose_df_from_db(ID=input$enter_main_user))
-                   }
-                   if (input$pull_csv == 0) {
-                     message("initial csv")
-                     return(psiCGM:::glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
-                                                            user_id = 1235))
-                   }
-                   message("default path")
-                   psiCGM:::glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
-                                                          user_id = 1235)
-                 })
 
-                 output$db_plot <- renderPlot(psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(ID=input$enter_main_user,
-                                                                                                fromDate = "2021-06-01")))
+                 output$db_plot <- renderPlot({
+                   if (input$pull_db == 0) # if the pull_db button has never been pressed, grab the csv data
+                   { message(paste("pulled from db:", paste(input$enter_main_user)))
+                     return(
+                       psiCGM:::plot_glucose(
+                       psiCGM:::glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
+                                                                     user_id = 1235)
+                       )
+                     )
+                   }
+                   psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(ID=input$enter_main_user,
+                                                                     fromDate = "2021-06-01"))
+                 })
                }
   )
 
@@ -60,20 +49,19 @@ mod_db_selection_server <- function(id, username="Name") {
 
 user_selection_demo <- function() {
 
-  userlist <- c("1234","789")
+  userlist <- c("1234","789") # placeholder: ultimately it should display all the users selected
 
-  ui <- biguserSelectionUI("x")
+  ui <- userSelectionUI("x")
   server <- function(input, output, session) {
-    mod_user_selection_server2("x", username = userlist)
+    mod_db_selection_server("x", username = userlist)
   }
   shinyApp(ui, server)
 
 }
 
-user_selection_demo()
+user_selection_demo()  # runs the final, official version of this module
 
-
-## DEMO ----
+## DEMO (old) ----
 
 #' selectionUI for test purposes: trying to work out how to use various shiny objects
 biguserSelectionUI <- function(id) {
@@ -160,3 +148,7 @@ user_selection_demo2 <- function() {
 }
 
 #user_selection_demo2()
+
+
+
+

@@ -23,7 +23,6 @@ ui <- fluidPage(
 
     # Application title
     titlePanel("Your CGM Data"),
-    #psiCGM:::userSelectionUI("test1"),
     # Sidebar with file picker
     sidebarLayout(
         sidebarPanel(
@@ -42,6 +41,8 @@ ui <- fluidPage(
             plotOutput("glucoseChart"),
             dataTableOutput("glucoseTable")
         )
-    )
+    ),
+
+    psiCGM:::userSelectionUI("test1")
 )
 
