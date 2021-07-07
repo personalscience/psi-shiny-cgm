@@ -22,15 +22,16 @@ mod_user_selection_server <- function(id, username="Name") {
 
   moduleServer(id,
                function(input, output, session) {
-                 userlist <- reactiveVal(username)
+                 userlist <- username
 
                  observeEvent(input$press_button, {
-                   userlist <- append(userlist(),input$enter_text)
+                   userlist <- append(userlist,input$enter_text)
+                   message(paste("button pressed:", paste(userlist, collapse = ",")))
                  })
 
                 # add_user_button<- reactive(input$press_button)
 
-                 output$user <- renderText(paste(input$enter_text,"is", paste(userlist(), collapse = ", ")))
+                 output$user <- renderText(paste(input$enter_text,"is", paste(userlist, collapse = ", ")))
                  }
   )
 
