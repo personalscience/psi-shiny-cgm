@@ -12,9 +12,11 @@ DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Heal
                                          "RichardSprague_glucose.csv")
 
 #' Read a valid libreview CSV file and return a dataframe and new user id
+#' Since Libreview files don't already include a user ID, append one to the dataframe that is returned.
 #' @title Read a standard format Libreview CSV file
 #' @return a canonical glucose value dataframe
 #' @param file path to a valid Libreview CSV file
+#' @param user_id new user ID to be appended to the dataframe
 #' @export
 #' @import readr magrittr tibble
 #' @import lubridate
