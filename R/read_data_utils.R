@@ -74,9 +74,30 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
   return(glucose_raw)
 }
 
+#' @title Notes dataframe from a CSV
+#' @param file path to a valid notes CSV file
+#' @return dataframe for a valid notes CSV file
+#'
+notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1_activity.csv"),
+                              user_id = 1235) {
 
-read_notes <- function(conn_args=config::get("dataconnection"),
-                    ID=13,
+  notes <- read_csv(file,
+                    col_types = cols(Start = col_datetime(format = "%m/%d/%y %H:%M"),
+                                     End = col_datetime(format = "%m/%d/%y %H:%M"),
+                                     Activity = col_factor(levels = c("Sleep", "Event", "Food"))))
+
+  notes$Start <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
+  notes$End <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
+  return(notes)
+}
+
+#' @title Read notes dataframe from database
+#' @description If notes exist for ID, return all notes in a dataframe
+#' @param ID user id
+#' @param fromDate (optional) earliest date from which to return notes
+#' @return dataframe representation of all notes for that user
+notes_df_from_db <- function(conn_args=config::get("dataconnection"),
+                    ID=1234,
                     fromDate="2019-11-01"){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
@@ -121,7 +142,8 @@ read_notes <- function(conn_args=config::get("dataconnection"),
 
 
 #' returns df of glucose values for ID after startDate
-#' eg. read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))
+#' @example read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))
+#' @return dataframe
 glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection"),
                                           ID=13,
                                           startTime=now()-hours(36),

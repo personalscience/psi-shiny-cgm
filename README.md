@@ -32,3 +32,11 @@ local:
    
    
 ```
+
+You will need the database `qsdb` in your Postgres instance. You'll also need a few tables, including `glucose_records` which stores the glucose data for each user.
+
+Run this script to automatically generate the database and a sample table:
+
+``` r
+source("dev/psi_db_create.r")
+```

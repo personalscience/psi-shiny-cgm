@@ -71,6 +71,9 @@ new_libreview_csv_records_for_user <- function(libreview_df = psiCGM:::glucose_d
   return(new_records)
 }
 
+#' @title Demo: which records will be written to db
+#' @description Won't actually write anything though.
+#' @return dataframe of which records would be written if you decide to write.
 demo_libreview_to_db <- function(csv_df = psiCGM:::glucose_df_from_libreview_csv(user_id=1235),
                                  user_id = 1235)
 {
