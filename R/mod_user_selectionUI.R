@@ -35,13 +35,13 @@ mod_db_selection_server <- function(id, username="Default Name") {
                    }
                    {
                      message(paste("pulled from db:", paste(input$enter_main_user)))
-                     psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(ID=input$enter_main_user,
+                     psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user,
                                                                      fromDate = "2021-06-01"))
                    }
                  })
 
 
-                 return(reactive(psiCGM:::glucose_df_from_db(ID=input$enter_main_user)))
+                 return(reactive(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user)))
                }
   )
 
@@ -116,7 +116,7 @@ mod_user_selection_server2 <- function(id, username="Name") {
                  output$main_user_table <- renderDataTable({
                    if (input$pull_db != 0)
                    { message(paste("pulled from db:", paste(input$enter_main_user)))
-                     return(psiCGM:::glucose_df_from_db(ID=input$enter_main_user))
+                     return(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user))
                    }
                    if (input$pull_csv == 0) {
                      message("initial csv")
@@ -128,7 +128,7 @@ mod_user_selection_server2 <- function(id, username="Name") {
                                                           user_id = 1235)
                  })
 
-                 output$db_plot <- renderPlot(psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(ID=input$enter_main_user,
+                 output$db_plot <- renderPlot(psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user,
                                                                                                 fromDate = "2021-06-01")))
                }
   )

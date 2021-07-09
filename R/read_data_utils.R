@@ -75,12 +75,12 @@ notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1
 
 #' @title Read from database a dataframe of glucose values for user_id ID
 #' @param fromDate a string representing the date from which you want to read the glucose values
-#' @param ID ID for a specific user in the database.
+#' @param user_id ID for a specific user in the database.
 #' @return a dataframe (tibble) with the full Libreview results since fromDate for user_id
 #' @description Reads from the current default database the glucose values for user_id ID.
 #' @export
 glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
-                         ID=1234,
+                         user_id = 1234,
                          fromDate="2019-11-01"){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
@@ -90,6 +90,8 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
                         dbname = conn_args$dbname,
                         password = conn_args$password)
 
+
+  ID <- user_id # needed for SQL conversion.
 
   glucose_df <- tbl(con, conn_args$glucose_table) %>%
     dplyr::filter(user_id %in% ID & time >= fromDate) %>% collect()# & top_n(record_date,2))# %>%
@@ -142,12 +144,12 @@ glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection")
 
 #' @title Read notes dataframe from database
 #' @description If notes exist for ID, return all notes in a dataframe
-#' @param ID user id
+#' @param user_id user id
 #' @param fromDate (optional) earliest date from which to return notes
 #' @return dataframe representation of all notes for that user
 #' @export
 notes_df_from_db <- function(conn_args=config::get("dataconnection"),
-                    ID=1234,
+                    user_id=1234,
                     fromDate="2019-11-01"){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
@@ -157,12 +159,12 @@ notes_df_from_db <- function(conn_args=config::get("dataconnection"),
                         dbname = conn_args$dbname,
                         password = conn_args$password)
 
-  notes_df <- tbl(con, "notes_records") %>%   filter(user_id %in% ID ) %>%
+  notes_df <- tbl(con, "notes_records") %>%   filter(user_id %in% user_id ) %>%
     collect() %>% mutate(Activity = factor(Activity),
                          user_id = factor(user_id))
 
   glucose_df <- tbl(con, conn_args$glucose_table)  %>%
-    filter(user_id %in% ID & record_date >= fromDate) %>% collect() %>%
+    filter(user_id %in% user_id & record_date >= fromDate) %>% collect() %>%
     transmute(time = force_tz(as_datetime(record_date) + record_time, Sys.timezone()),
                                           scan = value, hist = value, strip = NA, value = value,
                                           food = as.character(stringr::str_match(notes,"Notes=.*")),
@@ -209,7 +211,7 @@ glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
                         dbname = conn_args$dbname,
                         password = conn_args$password)
 
-  gf = glucose_df_from_db(ID=ID) %>% mutate(food=stringr::str_to_lower(stringr::str_replace(food,"Notes=","")),
+  gf = glucose_df_from_db(user_id=ID) %>% mutate(food=stringr::str_to_lower(stringr::str_replace(food,"Notes=","")),
                                       user_id=factor(user_id))
 
   return(slice(gf,stringr::tr_which(gf$food,foodname)))
