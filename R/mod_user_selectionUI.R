@@ -11,8 +11,8 @@ userSelectionUI <- function(id) {
   sidebarLayout(
   sidebarPanel(
     h3("Input values"),
-    actionButton(ns("pull_db"), "Pull user from DB"),
     numericInput(ns("enter_main_user"), label = "User Number:", value = 1234),
+    actionButton(ns("pull_db"), "Pull user from DB"),
     textOutput(ns("user"))
   ),
   mainPanel(
@@ -30,7 +30,7 @@ mod_db_selection_server <- function(id, username="Default Name") {
 
                  output$db_plot <- renderPlot({
                    if (input$pull_db == 0) # if the pull_db button has never been pressed, grab the csv data
-                   { message(paste("pulled from db:", paste(input$enter_main_user)))
+                   { message(paste("pulled from csv:", paste(input$enter_main_user)))
                      return(
                        psiCGM:::plot_glucose(
                        psiCGM:::glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
@@ -38,8 +38,11 @@ mod_db_selection_server <- function(id, username="Default Name") {
                        )
                      )
                    }
-                   psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(ID=input$enter_main_user,
+                   {
+                     message(paste("pulled from csv:", paste(input$enter_main_user)))
+                     psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(ID=input$enter_main_user,
                                                                      fromDate = "2021-06-01"))
+                   }
                  })
                }
   )

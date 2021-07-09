@@ -6,7 +6,7 @@
 #' @description Returns AUC for the first timelength minutes after the start of the glucose_df
 #' @param glucose_df dataframe of glucose values
 #' @param timelength number of minutes to look ahead for the AUC calculation
-#' @import DescTool
+#' @import DescTools
 #' @export
 auc_calc <- function(glucose_df, timelength = 120) {
   x <- glucose_df %>%
@@ -18,7 +18,7 @@ auc_calc <- function(glucose_df, timelength = 120) {
 
 }
 
-glucose_df_from_libreview_csv() %>% select("time", value)# %>%
-  filter(time < first(time) + lubridate::minutes(120)) #%>%
-  mutate(sec = as.numeric(.[["time"]])-as.numeric(first(.[["time"]])))# %>%
-  summarise(auc = sum(sec))
+# psiCGM::glucose_df_from_libreview_csv() %>% select("time", value)# %>%
+#   filter(time < first(time) + lubridate::minutes(120)) #%>%
+#   mutate(sec = as.numeric(.[["time"]])-as.numeric(first(.[["time"]])))# %>%
+#   summarise(auc = sum(sec))

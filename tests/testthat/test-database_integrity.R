@@ -1,9 +1,9 @@
 
-conn_args <- config::get("dataconnection")
-conn_args
+# conn_args <- config::get("dataconnection")
+# conn_args
 
 #' List all objects in the current PSI database
-#' @import DBI
+#' @import DBI config
 psi_list_objects <-
   function(conn_args = config::get("dataconnection")) {
     con <- DBI::dbConnect(

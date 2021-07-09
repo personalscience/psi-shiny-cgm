@@ -56,7 +56,7 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
 #' @title Notes dataframe from a CSV
 #' @param file path to a valid notes CSV file
 #' @return dataframe for a valid notes CSV file
-#'
+#' @export
 notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1_activity.csv"),
                               user_id = 1235) {
 
@@ -78,6 +78,7 @@ notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1
 #' @param ID ID for a specific user in the database.
 #' @return a dataframe (tibble) with the full Libreview results since fromDate for user_id
 #' @description Reads from the current default database the glucose values for user_id ID.
+#' @export
 glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
                          ID=1234,
                          fromDate="2019-11-01"){
@@ -144,6 +145,7 @@ glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection")
 #' @param ID user id
 #' @param fromDate (optional) earliest date from which to return notes
 #' @return dataframe representation of all notes for that user
+#' @export
 notes_df_from_db <- function(conn_args=config::get("dataconnection"),
                     ID=1234,
                     fromDate="2019-11-01"){

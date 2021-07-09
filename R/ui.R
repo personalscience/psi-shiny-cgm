@@ -27,6 +27,9 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
 
+
+
+
             psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
 
             textOutput("show_file"),
@@ -38,11 +41,10 @@ ui <- fluidPage(
 
         # Show a plot of the glucose levels
         mainPanel(
+            psiCGM:::userSelectionUI("test1"),
             plotOutput("glucoseChart"),
-            dataTableOutput("glucoseTable")
+           # dataTableOutput("glucoseTable")
         )
-    ),
-
-    psiCGM:::userSelectionUI("test1")
+    )
 )
 
