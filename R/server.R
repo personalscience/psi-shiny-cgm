@@ -39,7 +39,7 @@ server <- function(input, output) {
                                                    datafilepath()$name))
 
     psiCGM:::mod_cgm_plot_server("modChart", glucose_current(), datafilepath()$name)
-    psiCGM:::mod_db_selection_server("test1", username = "Server Name Here")
+    active_glucose_record <- psiCGM:::mod_db_selection_server("test1", username = "Server Name Here")
 }
 
 
