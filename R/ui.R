@@ -43,7 +43,7 @@ ui <- fluidPage(
         mainPanel(
             psiCGM:::userSelectionUI("test1"),
             plotOutput("glucoseChart"),
-           # dataTableOutput("glucoseTable")
+           dataTableOutput("glucoseTable")
         )
     )
 )

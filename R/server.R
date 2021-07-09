@@ -26,10 +26,14 @@ server <- function(input, output) {
 
     output$show_file <- renderText(datafilepath()$name)
 
-    glucose <- reactive(psiCGM:::glucose_df_from_libreview_csv(datafilepath()$datapath))
-    #glucose <- reactive(glucose_df_from_db())
-    glucose_current <- reactive(glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
+    #glucose <- reactive(psiCGM:::glucose_df_from_libreview_csv(datafilepath()$datapath))
+    active_glucose_record <- psiCGM:::mod_db_selection_server("test1", username = "Server Name Here")
+    message("new active glucose record")
 
+    #glucose <- reactive(glucose_df_from_db())
+    #glucose_current <- reactive(glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
+
+        glucose_current <-reactive(active_glucose_record() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
 
     output$glucoseTable <- renderDataTable({
         glucose_current()
@@ -39,7 +43,7 @@ server <- function(input, output) {
                                                    datafilepath()$name))
 
     psiCGM:::mod_cgm_plot_server("modChart", glucose_current(), datafilepath()$name)
-    active_glucose_record <- psiCGM:::mod_db_selection_server("test1", username = "Server Name Here")
+
 }
 
 
