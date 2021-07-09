@@ -8,8 +8,16 @@
 # library(tidyverse)
 # library(lubridate)
 
+# Initial constants ----
+
+#' Default Librelink CSV file.
 DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Health",
                                          "RichardSprague_glucose.csv")
+
+#' @title Possible values for `Activity` column in Notes.
+NOTES_COLUMNS <- c("Sleep", "Event", "Food","Exercise")
+
+# Read CSV ----
 
 #' Read a valid libreview CSV file and return a dataframe and new user id
 #' Since Libreview files don't already include a user ID, append one to the dataframe that is returned.
@@ -45,6 +53,25 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
 
 }
 
+#' @title Notes dataframe from a CSV
+#' @param file path to a valid notes CSV file
+#' @return dataframe for a valid notes CSV file
+#'
+notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1_activity.csv"),
+                              user_id = 1235) {
+
+  notes <- read_csv(file,
+                    col_types = cols(Start = col_datetime(format = "%m/%d/%y %H:%M"),
+                                     End = col_datetime(format = "%m/%d/%y %H:%M"),
+                                     Activity = col_factor(levels = NOTES_COLUMNS)))
+
+  notes$Start <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
+  notes$End <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
+  return(bind_cols(notes,user_id = user_id))
+}
+
+
+# Read DB ----
 
 #' @title Read from database a dataframe of glucose values for user_id ID
 #' @param fromDate a string representing the date from which you want to read the glucose values
@@ -74,22 +101,43 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
   return(glucose_raw)
 }
 
-#' @title Notes dataframe from a CSV
-#' @param file path to a valid notes CSV file
-#' @return dataframe for a valid notes CSV file
-#'
-notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1_activity.csv"),
-                              user_id = 1235) {
+#' @title Glucose values for ID after startDate
+#' @description
+#' For example `read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))`
+#' @return A valid glucose dataframe
+glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection"),
+                                         ID=13,
+                                         startTime=now()-hours(36),
+                                         timelength=120){
 
-  notes <- read_csv(file,
-                    col_types = cols(Start = col_datetime(format = "%m/%d/%y %H:%M"),
-                                     End = col_datetime(format = "%m/%d/%y %H:%M"),
-                                     Activity = col_factor(levels = c("Sleep", "Event", "Food"))))
 
-  notes$Start <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
-  notes$End <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
-  return(notes)
+  con <- DBI::dbConnect(drv = conn_args$driver,
+                        user = conn_args$user,
+                        host = conn_args$host,
+                        port = conn_args$port,
+                        dbname = conn_args$dbname,
+                        password = conn_args$password)
+
+
+  cutoff_1 <- as_datetime(startTime)
+  cutoff_2 <- as_datetime(startTime + minutes(timelength))
+
+  glucose_df <- tbl(con, conn_args$glucose_table)  %>%
+    filter(user_id %in% ID & record_date_time >= cutoff_1 &
+             record_date_time <= cutoff_2) %>% collect()
+
+  #  filter(user_id == ID & (record_date+record_time) >= startTime & (record_date+record_time) <= (startTime + timelength)) %>% collect()# & top_n(record_date,2))# %>%
+
+  glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(record_date) + record_time, Sys.timezone()),
+                                          scan = value, hist = value, strip = NA, value = value,
+                                          food = as.character(stringr::str_match(notes,"Notes=.*")),
+                                          user_id = factor(user_id))
+
+
+
+  glucose_raw
 }
+
 
 #' @title Read notes dataframe from database
 #' @description If notes exist for ID, return all notes in a dataframe
@@ -141,46 +189,13 @@ notes_df_from_db <- function(conn_args=config::get("dataconnection"),
 }
 
 
-#' returns df of glucose values for ID after startDate
-#' @example read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))
-#' @return dataframe
-glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection"),
-                                          ID=13,
-                                          startTime=now()-hours(36),
-                                          timelength=120){
-
-
-  con <- DBI::dbConnect(drv = conn_args$driver,
-                        user = conn_args$user,
-                        host = conn_args$host,
-                        port = conn_args$port,
-                        dbname = conn_args$dbname,
-                        password = conn_args$password)
-
-
-  cutoff_1 <- as_datetime(startTime)
-  cutoff_2 <- as_datetime(startTime + minutes(timelength))
-
-  glucose_df <- tbl(con, conn_args$glucose_table)  %>%
-    filter(user_id %in% ID & record_date_time >= cutoff_1 &
-             record_date_time <= cutoff_2) %>% collect()
-
-  #  filter(user_id == ID & (record_date+record_time) >= startTime & (record_date+record_time) <= (startTime + timelength)) %>% collect()# & top_n(record_date,2))# %>%
-
-  glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(record_date) + record_time, Sys.timezone()),
-                                          scan = value, hist = value, strip = NA, value = value,
-                                          food = as.character(stringr::str_match(notes,"Notes=.*")),
-                                          user_id = factor(user_id))
-
-
-
-  glucose_raw
-}
 
 
 #' return rows where food matches food
 #' eg. records_with_food(ID=8, foodname="apple")
-records_with_food <- function(conn_args=config::get("dataconnection"),
+#' @import DBI stringr
+#' @return a valid glucose dataframe containing records matching `food`
+glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
                               ID=13,
                               foodname = "banana"){
 
@@ -192,10 +207,10 @@ records_with_food <- function(conn_args=config::get("dataconnection"),
                         dbname = conn_args$dbname,
                         password = conn_args$password)
 
-  gf = read_glucose(ID=ID) %>% mutate(food=str_to_lower(stringr::str_replace(food,"Notes=","")),
+  gf = glucose_df_from_db(ID=ID) %>% mutate(food=stringr::str_to_lower(stringr::str_replace(food,"Notes=","")),
                                       user_id=factor(user_id))
 
-  return(slice(gf,str_which(gf$food,foodname)))
+  return(slice(gf,stringr::tr_which(gf$food,foodname)))
 
   # nf = read_notes(ID=ID)
   #
@@ -244,4 +259,50 @@ food_times_df <- function(ID=13, timeLength=120, foodname="apple juice"){
 
   return(df)
 }
+
+
+# DB queries ----
+
+#' @description
+#' Search the default database for the most recent (aka latest) timestamp
+#' Note: doesn't currently work for tables other than `glucose_records`
+#' @title Most recent date in the database for a given user
+#' @param user_id user ID
+#' @param table_name the table in which to find the latest record (currently fixed at `glucose-records`)
+#' @return a date object representing the most recent record in the database for this user. NA if there are no records.
+#' @import DBI
+max_date_for_user <-
+  function(conn_args = config::get("dataconnection"),
+           user_id = 1234,
+           fromDate = "2019-11-01",
+           table_name = conn_args$glucose_table) {
+    con <- DBI::dbConnect(
+      drv = conn_args$driver,
+      user = conn_args$user,
+      host = conn_args$host,
+      port = conn_args$port,
+      dbname = conn_args$dbname,
+      password = conn_args$password
+    )
+
+    ID = user_id
+
+    # maxDate <-
+    #   DBI::dbGetQuery(con, "select max(\"time\") from glucose_records;")$max
+
+    maxDate <-
+      tbl(con, table_name) %>%
+      filter(user_id == ID & time == max(time, na.rm = TRUE)) %>%
+      pull(time)
+
+
+    DBI::dbDisconnect(con)
+
+    return(if (length(maxDate > 0))
+      maxDate
+      else
+        NA)
+
+
+  }
 

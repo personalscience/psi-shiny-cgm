@@ -16,44 +16,7 @@ Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
 # Sys.setenv(R_CONFIG_ACTIVE = "cloud")
 
 
-#' Search the default database for the most recent (aka latest) timestamp
-#' @title Most recent date in the database for a given user
-#' @param user_id user ID
-#' @return a date object representing the most recent record in the database for this user. NA if there are no records.
-max_date_for_user <-
-  function(conn_args = config::get("dataconnection"),
-           user_id = 1234,
-           fromDate = "2019-11-01") {
-    con <- DBI::dbConnect(
-      drv = conn_args$driver,
-      user = conn_args$user,
-      host = conn_args$host,
-      port = conn_args$port,
-      dbname = conn_args$dbname,
-      password = conn_args$password
-    )
 
-    ID = user_id
-    glucose_df <- tbl(con, conn_args$glucose_table) %>%
-      filter(user_id %in% ID & time >= fromDate)
-
-    # maxDate <-
-    #   DBI::dbGetQuery(con, "select max(\"time\") from glucose_records;")$max
-
-    maxDate <-
-      tbl(con, conn_args$glucose_table) %>% filter(user_id == ID &
-                                                     time == max(time)) %>% pull(time)
-
-
-    DBI::dbDisconnect(con)
-
-    return(if (length(maxDate > 0))
-      maxDate
-      else
-        NA)
-
-
-  }
 
 #' New Libreview records
 #' @param libreview_df a valid Libreview dataframe as read directly from CSV

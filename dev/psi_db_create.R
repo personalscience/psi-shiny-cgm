@@ -2,6 +2,7 @@
 # Use this script only once: to set up the initial database and scheme
 # If your Postgres database is already set up and running, you should be able to simply 'source' this script
 # and it will automaticaly create the database 'qsdev' and a table 'glucose_records'
+# Note: nothing bad should happen if you source this on an existing database (i.e. nothing will happen)
 
 library(tidyverse)
 
@@ -70,14 +71,14 @@ psi_make_database_if_necessary <- function(conn_args = config::get("dataconnecti
 
   ## Add a new database "qsdb" if none exists on this server
   if (conn_args$dbname %in%
-      dbGetQuery(con, "SELECT datname FROM pg_database WHERE datistemplate = false;")$datname)
+      DBI::dbGetQuery(con, "SELECT datname FROM pg_database WHERE datistemplate = false;")$datname)
     { message("database already exists")
     return(NULL)
   } else
-    dbSendQuery(con, newdb_sqlstring)
+    DBI::dbSendQuery(con, newdb_sqlstring)
 
   # Now that qsdb is available, use that as the database for everything
-  dbDisconnect(con)
+  DBI::dbDisconnect(con)
 
 }
 
@@ -97,7 +98,7 @@ psi_make_table_if_necessary <- function(conn_args = config::get("dataconnection"
     password = conn_args$password
   )
 
-  if (dbExistsTable(con, table_name))
+  if (DBI::dbExistsTable(con, table_name))
   {message(paste0("Table '",table_name,"' already exists"))
     return(NULL)
   } else {
@@ -108,13 +109,15 @@ psi_make_table_if_necessary <- function(conn_args = config::get("dataconnection"
 
 }
 
-#' Glucose dataframe read from database
-#' @title Current glucose table
+#' Read contents of `table` from the database and return it as a dataframe
+#' @title Show table as a dataframe
 #' @param conn_args valid data connection
+#' @param table_name character string of the table name (default: `glucose_records`)
 #' @import DBI
 #' @return dataframe
-psi_glucose_table <-
-  function(conn_args = config::get("dataconnection")) {
+psi_table_df <-
+  function(conn_args = config::get("dataconnection"),
+           table_name = "glucose_records") {
     con <- DBI::dbConnect(
       drv = conn_args$driver,
       user = conn_args$user,
@@ -124,11 +127,11 @@ psi_glucose_table <-
       password = conn_args$password
     )
 
-    glucose_df <- tbl(con, "glucose_records") %>% collect()
+    table_df <- tbl(con, table_name) %>% collect()
 
     DBI::dbDisconnect(con)
 
-    return(glucose_df)
+    return(table_df)
 
   }
 
@@ -136,4 +139,4 @@ psi_glucose_table <-
 psi_list_objects()
 psi_make_database_if_necessary()
 psi_make_table_if_necessary(table = glucose_df_from_libreview_csv())
-psi_make_table_if_necessary(table_name = "notes_records", table = notes_df_from_csv())
+psi_make_table_if_necessary(table_name = "notes_records", table = psiCGM:::notes_df_from_csv())

@@ -19,12 +19,12 @@ Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
 # source("util/read_glucose_data.R")  # read raw glucose, notes, and watch data.
 
 
-psi_write_glucose <- function() {
+psi_write_glucose <- function(newtable=glucose_df_from_libreview_csv()) {
     message("write glucose records")
     maxDate <-
         DBI::dbGetQuery(con, "select max(\"time\") from glucose_records;")$max
     new_records <-
-        glucose_records %>% dplyr::filter(time > if_else(is.na(maxDate), min(glucose_records$time), maxDate))
+        newtable %>% dplyr::filter(time > if_else(is.na(maxDate), min(glucose_records$time), maxDate))
 
     # uncomment the following line to do the actual write to db
     # dbWriteTable(con, name = "glucose_records", value = new_records, row.names = FALSE, append = TRUE)
