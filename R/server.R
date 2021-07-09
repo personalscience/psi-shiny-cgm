@@ -14,6 +14,7 @@ library(shiny)
 library(tidyverse)
 library(lubridate)
 
+Sys.setenv(R_CONFIG_ACTIVE = "local")
 
 
 #' Define server logic required to display CGM information
@@ -21,6 +22,7 @@ library(lubridate)
 #' @import magrittr dplyr
 server <- function(input, output) {
     message("Server is running...")
+
 
     datafilepath <- psiCGM:::csvFilePathServer("datafile")
 

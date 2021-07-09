@@ -8,6 +8,7 @@ Sys.setenv(R_CONFIG_ACTIVE = "local")
 #' @export
 #' @import shiny
 run_app <- function(){
+  Sys.setenv(R_CONFIG_ACTIVE = "local")
   shinyApp(ui = ui,
            server = server)
 

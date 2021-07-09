@@ -11,6 +11,7 @@ GLUCOSE_DATA_FRAME <-
 
 # set the active configuration globally via Renviron.site or Rprofile.site
 Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
+# Sys.setenv(R_CONFIG_ACTIVE = "localtest") # a database useful for testing
 # Sys.setenv(R_CONFIG_ACTIVE = "cloud") # save to cloud
 # Sys.setenv(R_CONFIG_ACTIVE = "default") # save to sqlite
 # Sys.setenv(R_CONFIG_ACTIVE = "cloud")
@@ -53,7 +54,7 @@ psi_make_database_if_necessary <- function(conn_args = config::get("dataconnecti
     user = conn_args$user,
     host = conn_args$host,
     port = conn_args$port,
-    dbname = conn_args$dbname,
+   # dbname = conn_args$dbname,
     password = conn_args$password
   )
 
@@ -136,7 +137,8 @@ psi_table_df <-
   }
 
 
-psi_list_objects()
 psi_make_database_if_necessary()
-psi_make_table_if_necessary(table = glucose_df_from_libreview_csv())
+psi_list_objects()
+
+psi_make_table_if_necessary(table = psiCGM:::glucose_df_from_libreview_csv())
 psi_make_table_if_necessary(table_name = "notes_records", table = psiCGM:::notes_df_from_csv())
