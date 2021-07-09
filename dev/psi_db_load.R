@@ -57,4 +57,36 @@ psi_write_glucose <- function(conn_args = config::get("dataconnection"),
 
 }
 
+#' @description
+#'  For debugging and dev purposes only. Loads the database tables from scratch.
+fill_database_from_scratch <- function(conn_args = config::get("dataconnection"),
+                                       drop = TRUE) {
+
+    con <- DBI::dbConnect(
+        drv = conn_args$driver,
+        user = conn_args$user,
+        host = conn_args$host,
+        port = conn_args$port,
+        dbname = conn_args$dbname,
+        password = conn_args$password
+    )
+
+    if(drop) {
+        message("removing glucose records table")
+        DBI::dbRemoveTable(con, "glucose_records")
+    }
+    martha_glucose <- file.path("/Users/sprague/dev/psi/psiCGM/inst/extdata/Firstname1Lastname1_glucose.csv")
+    richard_glucose <- file.path("/Users/sprague/dev/psi/psiCGM/inst/extdata/Firstname2Lastname2_glucose.csv")
+    message("write Martha glucose records")
+    psi_write_glucose(conn_args = conn_args,
+                      user_id = 1235,
+                      new_table=glucose_df_from_libreview_csv(file = martha_glucose, user_id = 1235))
+    message("write Richard glucose records")
+    psi_write_glucose(conn_args = conn_args,
+                      user_id = 1234,
+                      new_table=glucose_df_from_libreview_csv(file = richard_glucose, user_id = 1234))
+
+    message("finished writing")
+
+}
 

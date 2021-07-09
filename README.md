@@ -40,3 +40,10 @@ Run this script to automatically generate the database and a sample table:
 ``` r
 source("dev/psi_db_create.r")
 ```
+
+Load a few sample glucose records into the database with this script
+
+```r
+source("dev/psi_db_load.R")
+fill_database_from_scratch(drop=TRUE)
+```

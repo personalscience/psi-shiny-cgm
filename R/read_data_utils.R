@@ -45,9 +45,14 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
       notes = Notes
     )
 
-  glucose_df <- glucose_raw  %>% transmute(time = `timestamp`,
-                                           scan = glucose_scan, hist = glucose_historic, strip = strip_glucose, value = glucose_historic,
-                                           food = notes) #as.character(stringr::str_match(notes,"Notes=.*")))
+  glucose_df <- glucose_raw  %>%
+    dplyr::filter(record_type != 6) %>% # Record type 6 does nothing
+    transmute(time = `timestamp`,
+              scan = glucose_scan,
+              hist = glucose_historic,
+              strip = strip_glucose,
+              value = dplyr::if_else(is.na(scan),hist,scan),
+              food = notes) #as.character(stringr::str_match(notes,"Notes=.*")))
 
   glucose_df %>% add_column(user_id = user_id)
 

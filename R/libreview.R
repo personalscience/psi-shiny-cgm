@@ -57,7 +57,9 @@ plot_glucose <- function(glucose_raw, title = "Name") {
 libreviewUI <- function(id) {
 
   tagList(
-    plotOutput(NS(id, "libreview"))
+    plotOutput(NS(id, "libreview")),
+    h3("AUC"),
+    textOutput(NS(id, "auc_value"))
   )
 
 }
@@ -67,6 +69,7 @@ mod_cgm_plot_server <- function(id,  glucose_df, title="Name") {
   moduleServer(id, function(input, output, session) {
 
     g <- reactive(plot_glucose(glucose_df, title))
+    output$auc_value <- renderText(psiCGM::auc_calc(glucose_df))
     output$libreview <- renderPlot(g())
 
   })

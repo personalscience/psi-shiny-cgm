@@ -40,7 +40,13 @@ server <- function(input, output) {
     })
 
     output$glucoseChart <- renderPlot(psiCGM:::plot_glucose(glucose_current(),
-                                                   datafilepath()$name))
+                                                            title = "User"
+                                                            # datafilepath()$name),
+    ) + annotate("text", x = glucose_current()$time[1] + lubridate::days(2),
+                 y = 100,
+                 label = paste("AUC=", auc_calc(glucose_current())
+                 )
+    ))
 
     psiCGM:::mod_cgm_plot_server("modChart", glucose_current(), datafilepath()$name)
 
