@@ -91,7 +91,7 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
 
 
   glucose_df <- tbl(con, conn_args$glucose_table) %>%
-    filter(user_id %in% ID & time >= fromDate) %>% collect()# & top_n(record_date,2))# %>%
+    dplyr::filter(user_id %in% ID & time >= fromDate) %>% collect()# & top_n(record_date,2))# %>%
 
   glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(time), Sys.timezone()),
                                           scan = value, hist = value, strip = NA, value = value,

@@ -1,6 +1,6 @@
 Package: psiCGM
 Title: Personal Science CGM Analysis Web App
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: 
     person(given = "Richard",
            family = "Sprague",
@@ -14,12 +14,16 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
+    conflicted,
+    DBI,
+    DescTools,
     dplyr,
     ggplot2,
     lubridate,
     magrittr,
     readr,
     shiny,
+    stringr,
     tibble
 Depends: 
     R (>= 2.10)
