@@ -12,11 +12,11 @@ userSelectionUI <- function(id) {
   sidebarPanel(
     h3("Input values"),
     numericInput(ns("enter_main_user"), label = "User Number:", value = 1234),
-    actionButton(ns("pull_db"), "Pull user from DB"),
-    textOutput(ns("user"))
+    actionButton(ns("pull_db"), "Pull user from DB")
   ),
   mainPanel(
-    h2("From the database"),
+    h2("Glucose"),
+   # textOutput(ns("user")),
     plotOutput(ns("db_plot"))
   ))
 }
@@ -36,7 +36,8 @@ mod_db_selection_server <- function(id, username="Default Name") {
                    {
                      message(paste("pulled from db:", paste(input$enter_main_user)))
                      psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user,
-                                                                     fromDate = "2021-06-01"))
+                                                                     fromDate = "2021-06-01"),
+                                           title = paste0("User: ",input$enter_main_user))
                    }
                  })
 

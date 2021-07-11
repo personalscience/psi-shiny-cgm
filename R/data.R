@@ -13,7 +13,7 @@
 #'   \item{strip}{glucose value (mg/dL) from strip (optional)}
 #'   \item{value}{glucose value, in mg/dL}
 #'   \item{food}{Food the user ate at that moment, if applicable}
-#'   \item{user_id} {Unique user ID}
+#'   \item{user_id}{Unique user ID}
 #' }
 #' @source \url{http://libreview.com/}
 #'

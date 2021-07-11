@@ -42,7 +42,7 @@ ui <- fluidPage(
         # Show a plot of the glucose levels
         mainPanel(
             psiCGM:::userSelectionUI("test1"),
-            plotOutput("glucoseChart"),
+            #plotOutput("glucoseChart"),
             psiCGM:::libreviewUI("modchart")
            #dataTableOutput("glucoseTable")
         )
