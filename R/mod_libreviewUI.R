@@ -16,8 +16,9 @@ mod_cgm_plot_server <- function(id,  glucose_df, title="Name") {
   moduleServer(id, function(input, output, session) {
 
     g <- reactive(psiCGM:::plot_glucose(glucose_df, title))
-    output$auc_value <- renderText(psiCGM::auc_calc(glucose_df))
+    output$auc_value <- renderText(paste0("AUC=",psiCGM::auc_calc(glucose_df)))
     output$libreview <- renderPlot(g())
+    return(g)
 
   })
 

@@ -50,7 +50,7 @@ server <- function(input, output) {
                  )
     ))
 
-    psiCGM:::mod_cgm_plot_server("modChart", glucose_current(), datafilepath()$name)
+   # psiCGM:::mod_cgm_plot_server("modChart", reactive(glucose_current()), title = "inside SErver")
 
 }
 

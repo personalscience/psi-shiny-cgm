@@ -8,17 +8,17 @@
 userSelectionUI <- function(id) {
   ns <- NS(id)
 
-  sidebarLayout(
+  # sidebarLayout(
   sidebarPanel(
     h3("Input values"),
     numericInput(ns("enter_main_user"), label = "User Number:", value = 1234),
-    actionButton(ns("pull_db"), "Pull user from DB")
-  ),
-  mainPanel(
-    h2("Glucose"),
-   # textOutput(ns("user")),
-    plotOutput(ns("db_plot"))
-  ))
+    actionButton(ns("pull_db"), "Pull user from DB"))
+  #
+  # mainPanel(
+  #   h2("Glucose"),
+  #  # textOutput(ns("user")),
+  #   plotOutput(ns("db_plot"))
+  # )
 }
 
 #' Shiny module server to show a Libreview plot from the database
@@ -28,18 +28,18 @@ mod_db_selection_server <- function(id, username="Default Name") {
                function(input, output, session) {
                  output$user <- reactive(input$enter_main_user) #renderText(paste(input$enter_text,"is", paste(userlist, collapse = ", ")))
 
-                 output$db_plot <- renderPlot({
-                   if (input$pull_db == 0) # if the pull_db button has never been pressed, grab the csv data
-                   { message(paste("pulled from csv:", paste(input$enter_main_user)))
-                     psiCGM:::plot_glucose(psiCGM::sample_libreview_df)
-                   }
-                   {
-                     message(paste("pulled from db:", paste(input$enter_main_user)))
-                     psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user,
-                                                                     fromDate = "2021-06-01"),
-                                           title = paste0("User: ",input$enter_main_user))
-                   }
-                 })
+                 # output$db_plot <- renderPlot({
+                 #   if (input$pull_db == 0) # if the pull_db button has never been pressed, grab the csv data
+                 #   { message(paste("pulled from csv:", paste(input$enter_main_user)))
+                 #     psiCGM:::plot_glucose(psiCGM::sample_libreview_df)
+                 #   }
+                 #   {
+                 #     message(paste("pulled from db:", paste(input$enter_main_user)))
+                 #     psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user,
+                 #                                                     fromDate = "2021-06-01"),
+                 #                           title = paste0("User: ",input$enter_main_user))
+                 #   }
+                 # })
 
 
                  return(reactive(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user)))
