@@ -23,16 +23,44 @@ mod_display_plot_server <- function(id,  glucose_df, title="Name from Server") {
 
 }
 
+mod_choose_userUI <- function(id) {
+  ns <- NS(id)
+  sidebarPanel(
+    h3("Choose user"),
+    numericInput(ns("enter_user"),label = "User", value = 1234),
+    textOutput(ns("current_user"))
+  )
+}
+
+#' Shiny server to return a valid glucose dataframe
+#' @returns dataframe
+mod_filter_glucose_server <- function(id, user_id = 1234){
+
+  moduleServer(id, function(input, output, session) {
+    #mod_choose_userUI()
+
+    ID <- reactive(input$enter_user)
+    output$current_user <- renderText(paste0("Current User = ",ID()))
+
+    df <- psiCGM:::glucose_df_from_db(user_id = user_id)
+    return(df)
+  })
+
+}
 
 display_demo <- function() {
-
-
   glucose_df <- sample_libreview_df
-  ui <- fluidPage(display_plotUI("x"),
-                  plotOutput("my_plot"))
+  ui <- fluidPage(
+    includeCSS("R/www/psi_shiny.css"),
+    titlePanel("Overall Title"),
+    display_plotUI("x"),
+    mod_choose_userUI("filter_ux"),
+    plotOutput("my_plot")
+  )
   server <- function(input, output, session) {
 
-    g <- mod_display_plot_server("x", glucose_df )
+    current_glucose <- mod_filter_glucose_server("filter_ux", user_id = 1234)
+    g <- mod_display_plot_server("x", current_glucose)
     output$my_plot <- g
 
   }

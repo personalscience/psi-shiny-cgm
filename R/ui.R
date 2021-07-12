@@ -17,12 +17,13 @@ library(shiny)
 ui <- fluidPage(
 
 
+    includeCSS("www/psi_shiny.css"),
     # Application title
     titlePanel("Personal Science Experiments", windowTitle = "Personal Science, Inc."),
     tags$a(href="https://personalscience.com", "More details"),
 
     # Application title
-    titlePanel("Your CGM Data"),
+    h2("Your CGM Data"),
     # Sidebar with file picker
     sidebarLayout(
         sidebarPanel(
