@@ -28,7 +28,8 @@ mod_choose_userUI <- function(id) {
   sidebarPanel(
     h3("Choose user"),
     numericInput(ns("enter_user"),label = "User", value = 1234),
-    textOutput(ns("current_user"))
+    textOutput(ns("current_user")),
+    plotOutput(ns("updated_plot"))
   )
 }
 
@@ -42,8 +43,9 @@ mod_filter_glucose_server <- function(id, user_id = 1234){
     #ID <- input$enter_user
     output$current_user <- renderText(paste0("Current User = ",input$enter_user))
 
-    df <- psiCGM:::glucose_df_from_db(user_id = user_id)
-    return(df)
+    df <- reactive(psiCGM:::glucose_df_from_db(user_id = input$enter_user))
+    output$updated_plot <- renderPlot(psiCGM:::plot_glucose(df()))
+    return(sample_libreview_df)
   })
 
 }
