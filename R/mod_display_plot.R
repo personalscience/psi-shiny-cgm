@@ -39,8 +39,8 @@ mod_filter_glucose_server <- function(id, user_id = 1234){
   moduleServer(id, function(input, output, session) {
     #mod_choose_userUI()
 
-    ID <- reactive(input$enter_user)
-    output$current_user <- renderText(paste0("Current User = ",ID()))
+    #ID <- input$enter_user
+    output$current_user <- renderText(paste0("Current User = ",input$enter_user))
 
     df <- psiCGM:::glucose_df_from_db(user_id = user_id)
     return(df)
