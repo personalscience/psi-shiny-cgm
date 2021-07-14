@@ -5,7 +5,6 @@
 #' @docType data
 #'
 #' @usage data(sample_libreview_df)
-#' @export
 #' @format A data frame with 2713 rows and 7 variables:
 #' \describe{
 #'   \item{time}{datetime}
