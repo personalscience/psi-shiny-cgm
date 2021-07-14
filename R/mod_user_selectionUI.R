@@ -10,9 +10,17 @@ userSelectionUI <- function(id) {
 
   # sidebarLayout(
   sidebarPanel(
-    h3("Input values"),
+    h3("Filter Users"),
     numericInput(ns("enter_main_user"), label = "User Number:", value = 1234),
-    actionButton(ns("pull_db"), "Pull user from DB"))
+    actionButton(ns("pull_db"), "Pull user from DB"),
+    dateInput(ns("date_start"),
+              label = "Start:",
+              value = lubridate::today() - lubridate::weeks(2)),
+    #
+    # dateRangeInput(ns("daterange1"), "Date range:",
+    #              start = "2021-06-01",
+    #              end   = "2021-06-25")
+  )
   #
   # mainPanel(
   #   h2("Glucose"),
@@ -22,11 +30,13 @@ userSelectionUI <- function(id) {
 }
 
 #' Shiny module server to show a Libreview plot from the database
+#' @return a reactive dataframe containing whatever filters are applied by the userSelectionUI
 mod_db_selection_server <- function(id, username="Default Name") {
 
   moduleServer(id,
                function(input, output, session) {
-                 output$user <- reactive(input$enter_main_user) #renderText(paste(input$enter_text,"is", paste(userlist, collapse = ", ")))
+                 output$user <-
+                   reactive(input$enter_main_user) #renderText(paste(input$enter_text,"is", paste(userlist, collapse = ", ")))
 
                  # output$db_plot <- renderPlot({
                  #   if (input$pull_db == 0) # if the pull_db button has never been pressed, grab the csv data
@@ -41,10 +51,14 @@ mod_db_selection_server <- function(id, username="Default Name") {
                  #   }
                  # })
 
+                 g <-
+                   reactive(psiCGM:::glucose_df_from_db(user_id = input$enter_main_user) %>%
+                   filter(time > input$date_start)
+                   )
 
-                 return(reactive(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user)))
-               }
-  )
+
+return(g)
+               })
 
 
 }
@@ -61,7 +75,7 @@ user_selection_demo <- function() {
 
 }
 
-user_selection_demo()  # runs the final, official version of this module
+#user_selection_demo()  # runs the final, official version of this module
 
 ## DEMO (old) ----
 

@@ -36,7 +36,7 @@ ui <- fluidPage(
             textOutput("show_file"),
 
             dateRangeInput("daterange1", "Date range:",
-                           start = "2021-05-30",
+                           start = "2021-06-01",
                            end   = "2021-06-25"),
         ),
 
