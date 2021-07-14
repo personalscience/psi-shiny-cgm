@@ -28,7 +28,7 @@ mod_cgm_plot_server <- function(id,  glucose_df, title="Name") {
 cgm_demo <- function() {
 
 
-  glucose_df <- sample_libreview_df
+  glucose_df <- psiCGM:::sample_libreview_df
   ui <- fluidPage(libreviewUI("x"))
   server <- function(input, output, session) {
     mod_cgm_plot_server("x", glucose_df)
