@@ -52,7 +52,8 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
               hist = glucose_historic,
               strip = strip_glucose,
               value = dplyr::if_else(is.na(scan),hist,scan),
-              food = notes) #as.character(stringr::str_match(notes,"Notes=.*")))
+              food = notes) # dplyr::if_else(is.na(notes),notes, paste0("Notes=",notes))) #dplyr::if_else(is.na(notes),"no", "yes"))#paste0("Notes=",notes)))
+
 
   glucose_df %>% add_column(user_id = user_id)
 
@@ -223,7 +224,7 @@ glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
   gf = glucose_df_from_db(user_id=ID) %>% mutate(food=stringr::str_to_lower(stringr::str_replace(food,"Notes=","")),
                                       user_id=factor(user_id))
 
-  return(slice(gf,stringr::tr_which(gf$food,foodname)))
+  return(slice(gf,stringr::str_which(gf$food,foodname)))
 
   # nf = read_notes(ID=ID)
   #
