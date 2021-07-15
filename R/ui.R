@@ -17,7 +17,7 @@ library(shiny)
 ui <- fluidPage(
 
 
-    includeCSS("R/www/psi_shiny.css"),
+    includeCSS(file.path("R","www","psi_shiny.css")),
     # Application title
     titlePanel("Personal Science Experiments", windowTitle = "Personal Science, Inc."),
     tags$a(href="https://personalscience.com", "More details"),

@@ -15,7 +15,7 @@ userSelectionUI <- function(id) {
     actionButton(ns("pull_db"), "Pull user from DB"),
     dateInput(ns("date_start"),
               label = "Start:",
-              value = lubridate::today() - lubridate::weeks(2)),
+              value = "2021-06-15"), ##lubridate::today() - lubridate::weeks(2)),
     #
     # dateRangeInput(ns("daterange1"), "Date range:",
     #              start = "2021-06-01",
