@@ -33,17 +33,19 @@ ui <- fluidPage(
 
             psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
 
-            textOutput("show_file"),
+            textOutput("show_file")
 
-            dateRangeInput("daterange1", "Date range:",
-                           start = "2021-06-01",
-                           end   = "2021-06-25"),
+            # dateRangeInput("daterange1", "Date range:",
+            #                start = "2021-06-01",
+            #                end   = "2021-06-25"),
         ),
 
         # Show a plot of the glucose levels
         mainPanel(
-            psiCGM:::userSelectionUI("test1"),
-            plotOutput("glucoseChart"),
+            psiCGM:::psi_plotUI("psi_filter_plot"),
+            #psiCGM:::userSelectionUI("test1"),
+            #plotOutput("glucoseChart")
+
            # psiCGM:::libreviewUI("modchart"),
            #dataTableOutput("glucoseTable")
         )

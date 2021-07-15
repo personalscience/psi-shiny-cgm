@@ -29,7 +29,9 @@ server <- function(input, output) {
     output$show_file <- renderText(datafilepath()$name)
 
     #glucose <- reactive(psiCGM:::glucose_df_from_libreview_csv(datafilepath()$datapath))
-    active_glucose_record <- psiCGM:::mod_db_selection_server("test1", username = "Server Name Here")
+    #active_glucose_record <- psiCGM:::mod_db_selection_server("test1", username = "Server Name Here")
+
+    active_glucose_record <- psiCGM:::mod_psi_plot("psi_filter_plot")
     message("new active glucose record")
 
     #glucose <- reactive(glucose_df_from_db())

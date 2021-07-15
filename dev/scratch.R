@@ -4,7 +4,7 @@ Sys.setenv(R_CONFIG_ACTIVE = "p4mi")
 
 read_db <- function(conn_args=config::get("dataconnection"),
                      user_id = 1234,
-                     fromDate="2019-11-01"){
+                     from_date="2019-11-01"){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
                         user = conn_args$user,

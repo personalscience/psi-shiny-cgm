@@ -144,7 +144,7 @@ mod_user_selection_server2 <- function(id, username="Name") {
                  })
 
                  output$db_plot <- renderPlot(psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user,
-                                                                                                fromDate = "2021-06-01")))
+                                                                                                from_date = "2021-06-01")))
                }
   )
 

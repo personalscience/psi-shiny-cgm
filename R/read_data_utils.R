@@ -80,14 +80,14 @@ notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1
 # Read DB ----
 
 #' @title Read from database a dataframe of glucose values for user_id ID
-#' @param fromDate a string representing the date from which you want to read the glucose values
+#' @param from_date a string representing the date from which you want to read the glucose values
 #' @param user_id ID for a specific user in the database.
 #' @return a dataframe (tibble) with the full Libreview results since fromDate for user_id
 #' @description Reads from the current default database the glucose values for user_id ID.
 #' @export
 glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
                          user_id = 1234,
-                         fromDate="2019-11-01"){
+                         from_date="2019-11-01"){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
                         user = conn_args$user,
@@ -100,7 +100,7 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
   ID <- user_id # needed for SQL conversion.
 
   glucose_df <- tbl(con, conn_args$glucose_table) %>%
-    dplyr::filter(user_id %in% ID & time >= fromDate) %>% collect()# & top_n(record_date,2))# %>%
+    dplyr::filter(user_id %in% ID & time >= from_date) %>% collect()# & top_n(record_date,2))# %>%
 
   glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(time), Sys.timezone()),
                                           scan = value, hist = value, strip = NA, value = value,
@@ -174,7 +174,7 @@ notes_df_from_db <- function(conn_args=config::get("dataconnection"),
   notes_records <- notes_df
 
   # glucose_df <- tbl(con, conn_args$glucose_table)  %>%
-  #   filter(user_id %in% ID & record_date >= fromDate) %>% collect() %>%
+  #   filter(user_id %in% ID & record_date >= from_date) %>% collect() %>%
   #   transmute(time = force_tz(as_datetime(record_date) + record_time, Sys.timezone()),
   #                                         scan = value, hist = value, strip = NA, value = value,
   #                                         food = as.character(stringr::str_match(notes,"Notes=.*")),
