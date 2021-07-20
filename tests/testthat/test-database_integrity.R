@@ -2,6 +2,10 @@
 # conn_args <- config::get("dataconnection")
 # conn_args
 
+active_env <- Sys.getenv("R_CONFIG_ACTIVE")
+Sys.setenv(R_CONFIG_ACTIVE = "localtest")
+
+
 #' List all objects in the current PSI database
 #' @import DBI config
 psi_list_objects <-
@@ -27,6 +31,14 @@ psi_list_objects <-
   }
 
 
+test_that("Using test database 'localtest'", {
+  expect_equal(Sys.getenv("R_CONFIG_ACTIVE"),
+               "localtest")
+})
+
 test_that("Glucose Record table exists in database", {
   expect_equal("glucose_records" %in% psi_list_objects()$tables, TRUE)
 })
+
+Sys.setenv(R_CONFIG_ACTIVE = active_env )
+
