@@ -306,7 +306,8 @@ max_date_for_user <-
 
     maxDate <-
       tbl(con, table_name) %>%
-      filter(user_id == ID & time == max(time, na.rm = TRUE)) %>%
+      filter(user_id == ID) %>%
+      filter(time == max(time, na.rm = TRUE)) %>%
       pull(time)
 
 
