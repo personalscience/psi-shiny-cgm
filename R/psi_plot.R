@@ -24,8 +24,18 @@ plot_glucose <- function(glucose_raw, title = "Name") {
   g = ggplot(data = glucose_raw, aes(x=time, y = value) )
   g + psi_theme + geom_line(color = "red")  +
     labs(title = title, x = "", y = "mg/mL", subtitle = "Continuous glucose monitoring") +
-    scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") +
+    scaled_axis(glucose_raw) +
+    #scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") +
     coord_cartesian(ylim = c(40, 130))
+}
+
+#' Adjust x axis depending on time scale of glucose data frame
+#' @return scale_x_datetime object, to be added to glucose plot
+scaled_axis <- function(glucose_raw) {
+  time_length <- max(glucose_raw$time) - min(glucose_raw$time)
+  if (as.numeric(time_length, units = "days") > 1)
+    return(scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") )
+  else return(scale_x_datetime(date_breaks = "1 hour", date_labels = "%b-%d %H:%M"))
 }
 
 #' @title Generate a ggplot2 overlay for notes dataframe

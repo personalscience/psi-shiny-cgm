@@ -32,7 +32,14 @@ mod_psi_plot <- function(id){
   moduleServer(id, function(input, output, session) {
     ID<- reactive(input$user_id)
     start_date <- reactive(input$start_date + lubridate::hours(input$start_time))
-    glucose_df <- reactive(glucose_df_from_db(user_id = ID(), from_date = start_date()))
+    glucose_df <- reactive(
+      if(input$zoom_to_date) {
+        glucose_df_from_db(user_id = ID(), from_date = start_date()) %>%
+          filter(.data[["time"]] < (start_date() +
+                           lubridate::hours(input$start_time) +
+                           lubridate::minutes(input$time_length)))
+      } else  glucose_df_from_db(user_id = ID(), from_date = start_date())
+      )
     output$psi_plot <- renderPlot(psiCGM:::plot_glucose(glucose_df(), title = paste0("User =", ID())))
     return(glucose_df)
   })
