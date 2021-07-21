@@ -101,12 +101,15 @@ psi_make_table_if_necessary <- function(conn_args = config::get("dataconnection"
 
   if (DBI::dbExistsTable(con, table_name))
   {message(paste0("Table '",table_name,"' already exists"))
-    return(NULL)
   } else {
    # DBI::dbCreateTable(con, table_name, table)
     message(paste("Writing to table", table_name))
     DBI::dbWriteTable(con, name = table_name, value = table, overwrite=TRUE)
   }
+
+  DBI::dbDisconnect(con)
+
+  return(NULL)
 
 }
 
@@ -142,3 +145,7 @@ psi_list_objects()
 
 psi_make_table_if_necessary(table = psiCGM:::glucose_df_from_libreview_csv())
 psi_make_table_if_necessary(table_name = "notes_records", table = psiCGM:::notes_df_from_csv())
+psi_make_table_if_necessary(table_name = "user_list", table = psiCGM::user_list_from_libreview)
+
+
+

@@ -8,6 +8,7 @@ library(tidyverse)
 library(lubridate)
 
 
+
 # set the active configuration globally via Renviron.site or Rprofile.site
 Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
 # Sys.setenv(R_CONFIG_ACTIVE = "cloud") # save to cloud
@@ -98,6 +99,9 @@ psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnecti
 
 # uncomment this section to add an arbitrary new CSV file
 # be sure to set both user_ids
-# psi_write_glucose(user_id = 1236,
-#                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1236)
+# psi_write_glucose(user_id = 1004,
+#                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1004)
 # )
+
+
+
