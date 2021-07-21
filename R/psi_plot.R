@@ -21,9 +21,13 @@ DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Heal
 #' @import ggplot2
 #' @return ggplot object
 plot_glucose <- function(glucose_raw, title = "Name") {
+  auc = auc_calc(glucose_raw)
   g = ggplot(data = glucose_raw, aes(x=time, y = value) )
   g + psi_theme + geom_line(color = "red")  +
-    labs(title = title, x = "", y = "mg/mL", subtitle = "Continuous glucose monitoring") +
+    labs(title = title, x = "", y = "mg/mL",
+         subtitle = paste0("Continuous glucose monitoring (AUC =",
+                          auc, ")"
+                          )) +
     scaled_axis(glucose_raw) +
     #scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") +
     coord_cartesian(ylim = c(40, 130))

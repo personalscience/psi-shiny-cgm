@@ -52,6 +52,8 @@ server <- function(input, output) {
                  )
     ))
 
+   # output$auc_value <- renderText(paste("AUC=", auc_calc(glucose_current())))
+
    # psiCGM:::mod_cgm_plot_server("modChart", reactive(glucose_current()), title = "inside SErver")
 
 }
