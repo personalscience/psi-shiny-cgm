@@ -171,7 +171,8 @@ notes_df_from_db <- function(conn_args=config::get("dataconnection"),
     collect() %>% mutate(Activity = factor(Activity),
                          user_id = factor(ID))
 
-  notes_records <- notes_df
+  notes_records <- notes_df %>%
+    mutate(Comment = stringr::str_to_lower(Comment))
 
   # glucose_df <- tbl(con, conn_args$glucose_table)  %>%
   #   filter(user_id %in% ID & record_date >= from_date) %>% collect() %>%
@@ -205,13 +206,19 @@ notes_df_from_db <- function(conn_args=config::get("dataconnection"),
 
 
 
-#' return rows where food matches food
-#' eg. records_with_food(ID=8, foodname="apple")
+
+#' @title return a dataframe of rows in the database where food matches food
+#' @description
+#' Search the notes database for records indicating `foodname` and
+#' return just those rows that contain that food.
+#' @param conn_args database connection
+#' @param user_id user ID
+#' @param foodname a string indicating a specific food
 #' @import DBI stringr
 #' @return a valid glucose dataframe containing records matching `food`
 glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
-                              ID=13,
-                              foodname = "banana"){
+                                user_id = 1235,
+                                foodname = "blueberries"){
 
 
   con <- DBI::dbConnect(drv = conn_args$driver,
@@ -221,15 +228,15 @@ glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
                         dbname = conn_args$dbname,
                         password = conn_args$password)
 
-  gf = glucose_df_from_db(user_id=ID) %>% mutate(food=stringr::str_to_lower(stringr::str_replace(food,"Notes=","")),
-                                      user_id=factor(user_id))
 
-  return(slice(gf,stringr::str_which(gf$food,foodname)))
+  ID <-  user_id
 
-  # nf = read_notes(ID=ID)
-  #
-  # slice(gf,str_which(str_to_lower(nf$Comment),str_to_lower(foodname))) %>% pull(time)
+  nf <- notes_df_from_db(conn_args, user_id = ID) %>%
+    filter(stringr::str_detect(Comment, foodname))
+
+  return(nf)
 }
+
 
 # converts the timestamp into time objects
 zero_time <- function(times_vector){
