@@ -43,8 +43,19 @@ source("dev/psi_db_create.r")
 
 Load a few sample glucose records into the database with this script
 
-```r
+``` r
 source("dev/psi_db_load.R")
 fill_database_from_scratch(drop=TRUE)
 ```
 
+# Testing
+
+Many of the tests rely on a separate database stored in `config::get("dataconnection")$dbname` = `testdb`.
+
+To generate the database, run the script `psi_db_create.R` with:
+
+``` r
+Sys.setenv(R_CONFIG_ACTIVE = "localtest")
+```
+
+This loads the test database with a known set of glucose values.

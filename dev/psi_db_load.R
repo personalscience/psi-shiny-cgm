@@ -36,16 +36,21 @@ psi_write_glucose <- function(conn_args = config::get("dataconnection"),
         password = conn_args$password
     )
 
+    ID <- user_id
+
+    psi_make_table_if_necessary(conn_args = conn_args, table = new_table)
+
+    maxDate <- psiCGM:::max_date_for_user(conn_args, user_id = ID)
+    new_records <-
+       new_table %>% dplyr::filter(time > {if(is.na(maxDate)) min(time) else maxDate}) %>%
+        dplyr::filter(user_id == ID)
+
+
+
     message("write glucose records")
 
-    DBI::dbWriteTable(con, "glucose_records", new_table, append = TRUE)
-
-    maxDate <- psiCGM:::max_date_for_user(conn_args, user_id = user_id)
-    #new_records <-
-    #    new_table %>% dplyr::filter(time > if_else(is.na(maxDate), min(conn_args$glucose_table$time), maxDate))
-
     # uncomment the following line to do the actual write to db
-    #DBI::dbWriteTable(con, name = "glucose_records", value = new_records, row.names = FALSE, append = TRUE)
+   DBI::dbWriteTable(con, name = "glucose_records", value = new_records, row.names = FALSE, append = TRUE)
 
     message("write notes records (not working yet)")
 
@@ -59,7 +64,7 @@ psi_write_glucose <- function(conn_args = config::get("dataconnection"),
 
 #' @description
 #'  For debugging and dev purposes only. Loads the database tables from scratch.
-fill_database_from_scratch <- function(conn_args = config::get("dataconnection"),
+psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnection"),
                                        drop = TRUE) {
 
     con <- DBI::dbConnect(
@@ -90,3 +95,9 @@ fill_database_from_scratch <- function(conn_args = config::get("dataconnection")
 
 }
 
+
+# uncomment this section to add an arbitrary new CSV file
+# be sure to set both user_ids
+# psi_write_glucose(user_id = 1236,
+#                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1236)
+# )
