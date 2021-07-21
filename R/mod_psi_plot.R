@@ -10,7 +10,14 @@ psi_plotUI <- function(id) {
   ns <- NS(id)
   mainPanel(
     numericInput(ns("user_id"), label = "User ID", value = 1235),
+
+    flowLayout(
     dateInput(ns("start_date"), label = "Start Date", value = "2021-06-15" ),
+    sliderInput(ns("start_time"), label = "Start Time (Hour)", value = 12, min = 0, max = 23),
+    sliderInput(ns("time_length"), label = "Time length (Min)", value = 120, min = 10, max = 480, step = 30),
+    checkboxInput(ns("zoom_to_date"), label = "Zoom Day", value = FALSE)
+        ),
+
     checkboxInput(ns("chk_sleep"), label = "Sleep", value = FALSE),
     plotOutput(ns("psi_plot"))
   )
@@ -24,7 +31,7 @@ mod_psi_plot <- function(id){
 
   moduleServer(id, function(input, output, session) {
     ID<- reactive(input$user_id)
-    start_date <- reactive(input$start_date)
+    start_date <- reactive(input$start_date + lubridate::hours(input$start_time))
     glucose_df <- reactive(glucose_df_from_db(user_id = ID(), from_date = start_date()))
     output$psi_plot <- renderPlot(psiCGM:::plot_glucose(glucose_df(), title = paste0("User =", ID())))
     return(glucose_df)
