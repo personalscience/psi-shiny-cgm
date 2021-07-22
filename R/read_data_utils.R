@@ -133,9 +133,10 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
   ## TODO this section can be optimized with a direct SQL call instead of
   ## dealing with dataframes.
 
-  glucose_df <- table_df_from_db(conn = conn_args,
-                                 table_name = conn_args$glucose_table) %>%
-    dplyr::filter(user_id %in% ID & time >= from_date) # & top_n(record_date,2))# %>%
+
+
+  glucose_df <-tbl(con, conn_args$glucose_table) %>%
+    dplyr::filter(user_id %in% ID & time >= from_date) %>% collect() # & top_n(record_date,2))# %>%
 
   glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(time), Sys.timezone()),
                                           scan = value, hist = value, strip = NA, value = value,
