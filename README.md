@@ -46,6 +46,18 @@ Load a few sample glucose records into the database with this script
 ``` r
 source("dev/psi_db_load.R")
 fill_database_from_scratch(drop=TRUE)
+
+## User database
+
+
+User information, including credentials and possibly other private user data, will eventually be stored in Firebase or another data store more suited to it. 
+
+The unique identifier for each user is stored as the key `user_id` in all data tables. For testing purposes, this package includes `data(user_df_from_libreview)`, a dataframe that tracks identifying information about each of the users.
+
+Until a "real" user database is available, you should ensure that `user_df_from_libreview` is kept up-to-date.  It is constructed by a script in `/data-raw/DATASET.R`
+
+
+
 ```
 
 # Testing

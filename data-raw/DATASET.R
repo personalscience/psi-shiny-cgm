@@ -8,7 +8,10 @@ sample_libreview_df <- glucose_df_from_libreview_csv(system.file("extdata", pack
 usethis::use_data(sample_libreview_df, overwrite = TRUE)
 
 #' @title Return user list from Tastermonial Libreview download
-user_list_from_csv <- function(file = system.file("extdata", package = "psiCGM", "Tastermonial_all Patients_dashboard.csv")){
+#' @description A Libreview "practice" stores all its user information in a single
+#' CSV file, which this function will convert into a canonical dataframe.
+#' @param file the main file downloaded from a Libreview practice ID
+user_df_from_csv <- function(file = system.file("extdata", package = "psiCGM", "Tastermonial_all Patients_dashboard.csv")){
   user_df <- readr::read_csv(file = file,
                              skip =1,
                              col_types = cols()) %>%
@@ -22,5 +25,13 @@ user_list_from_csv <- function(file = system.file("extdata", package = "psiCGM",
   return(user_df)
 }
 
-user_list_from_libreview <- user_list_from_csv() %>% mutate(user_id = row_number() + 1000)
-usethis::use_data(user_list_from_libreview, overwrite = TRUE)
+extra_user_df <- read_csv(file = system.file("extdata",
+                                             package = "psiCGM",
+                                             "Tastermonial_Extra_Users.csv"),
+                          col_types = "cccccd") %>% mutate(birthdate = lubridate::mdy(birthdate))
+
+user_df_from_libreview <-
+  user_df_from_csv() %>% mutate(user_id = row_number() + 1000) %>%
+  dplyr::anti_join(extra_user_df,
+                   by = c("first_name", "last_name")) %>% bind_rows(extra_user_df)
+usethis::use_data(user_df_from_libreview, overwrite = TRUE)

@@ -5,6 +5,7 @@
 #' @description Turn a Tastermonial Airtable file into a canonical dataframe.
 #' @param file path to a CSV file
 #' @return canonical dataframe of Tastermonial information
+#' @export
 taster_df <- function(file = file.path("~/dev/psi/psiCGM","inst","extdata","TastermonialNotes.csv")){
 
   taster_raw <-
