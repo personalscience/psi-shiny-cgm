@@ -34,8 +34,13 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
                                user_id = 1234) {
 
 
+  firstline <- readLines(con = file, 1) %>%
+    str_split(pattern = ",", simplify = TRUE)
+
+  skip_lines <- if_else(firstline[1] == "Glucose Data", 1, 2)
+
   glucose_raw <-
-    readr::read_csv(file, skip = 1, col_types = "cccdddddcddddcddddd") %>%
+    readr::read_csv(file, skip = skip_lines, col_types = "cccdddddcddddcddddd") %>%
     transmute(
       timestamp = lubridate::mdy_hm(`Device Timestamp`),
       record_type = `Record Type`,
