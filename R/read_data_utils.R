@@ -84,6 +84,32 @@ notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1
 
 # Read DB ----
 
+#' @title Load all rows from a database table and return as a dataframe
+#' @description Connects to the default database and looks up a table.
+#' Slightly more convenient than setting up the database connection first.
+#' @param conn_args valid database connection
+#' @param table_name character string
+#' @return dataframe representation of the table
+#' @export
+table_df_from_db <- function(conn_args = config::get("dataconnection"),
+                             table_name = "glucose_records") {
+  con <- DBI::dbConnect(
+    drv = conn_args$driver,
+    user = conn_args$user,
+    host = conn_args$host,
+    port = conn_args$port,
+    dbname = conn_args$dbname,
+    password = conn_args$password
+  )
+
+  df <- tbl(con, table_name) %>% collect()
+
+  DBI::dbDisconnect(con)
+  return(df)
+
+}
+
+
 #' @title Read from database a dataframe of glucose values for user_id ID
 #' @param from_date a string representing the date from which you want to read the glucose values
 #' @param user_id ID for a specific user in the database.
@@ -104,14 +130,19 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
 
   ID <- user_id # needed for SQL conversion.
 
-  glucose_df <- tbl(con, conn_args$glucose_table) %>%
-    dplyr::filter(user_id %in% ID & time >= from_date) %>% collect()# & top_n(record_date,2))# %>%
+  ## TODO this section can be optimized with a direct SQL call instead of
+  ## dealing with dataframes.
+
+  glucose_df <- table_df_from_db(conn = conn_args,
+                                 table_name = conn_args$glucose_table) %>%
+    dplyr::filter(user_id %in% ID & time >= from_date) # & top_n(record_date,2))# %>%
 
   glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(time), Sys.timezone()),
                                           scan = value, hist = value, strip = NA, value = value,
                                           food = food,
                                           user_id = user_id)
 
+  DBI::dbDisconnect(con)
   return(glucose_raw)
 }
 
@@ -203,6 +234,7 @@ notes_df_from_db <- function(conn_args=config::get("dataconnection"),
   #                                  mutate(Activity=factor(Activity),
   #                                         user_id=factor(user_id, all_levels))
 
+  DBI::dbDisconnect(con)
   return(notes_records)
 
 

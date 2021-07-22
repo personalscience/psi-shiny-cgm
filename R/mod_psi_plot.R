@@ -47,7 +47,8 @@ mod_psi_plot <- function(id){
                            lubridate::minutes(input$time_length)))
       } else  glucose_df_from_db(user_id = ID(), from_date = start_date())
       )
-    output$psi_plot <- renderPlot(psiCGM:::plot_glucose(glucose_df(), title = paste0("User =", ID())))
+    output$psi_plot <- renderPlot(psiCGM:::plot_glucose(glucose_df(),
+                                                        title = paste0("User =", username_for_id(ID()))))
     return(glucose_df)
   })
 
