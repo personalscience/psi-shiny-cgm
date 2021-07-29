@@ -13,7 +13,7 @@ psi_plotUI <- function(id) {
 
     sidebarPanel(   fluidRow(
       numericInput(ns("user_id"), label = "User ID", value = 1235),
-    dateInput(ns("start_date"), label = "Start Date", value = "2021-06-15" ),
+    dateInput(ns("start_date"), label = "Start Date", value = as_datetime("2021-06-15", tz = Sys.timezone() )),
     sliderInput(ns("start_time"), label = "Start Time (Hour)", value = 12, min = 0, max = 23),
     sliderInput(ns("time_length"), label = "Time length (Min)", value = 120, min = 10, max = 480, step = 30),
     checkboxInput(ns("zoom_to_date"), label = "Zoom Day", value = FALSE),
@@ -37,8 +37,8 @@ mod_psi_plot <- function(id){
 
   moduleServer(id, function(input, output, session) {
     ID<- reactive(input$user_id)
-    start_date <- reactive(force_tz(as_datetime(input$start_date),
-                                    tz=Sys.timezone()) +
+    start_date <- reactive(as_datetime(input$start_date,
+                                       tz=Sys.timezone()) +
                              lubridate::hours(input$start_time))
     go_date <- reactive(if(input$submit_food) psiCGM:::food_times_df()
                         else (input$start_date + lubridate::hours(input$start_time))
@@ -66,11 +66,13 @@ demo_psi_plot <- function(){
 
 
   ui <- fluidPage(
-    psi_plotUI("x")
+    psi_plotUI("x"),
+    dataTableOutput("table")
   )
 
   server <- function(input, output, session) {
-    mod_psi_plot("x")
+    gdf <- mod_psi_plot("x")
+    output$table <- renderDataTable(gdf())
   }
 
   shinyApp(ui, server)

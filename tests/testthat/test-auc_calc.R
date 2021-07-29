@@ -6,7 +6,7 @@ Sys.setenv(R_CONFIG_ACTIVE = "localtest")
 db_glucose_df <- glucose_df_from_db()
 
 test_that("AUC Calculations", {
-  expect_equal(as.integer(auc_calc(db_glucose_df)),143)
+  expect_equal(as.integer(auc_calc(db_glucose_df)),168)
 })
 
 Sys.setenv(R_CONFIG_ACTIVE = active_env )

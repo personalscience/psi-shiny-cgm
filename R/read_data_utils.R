@@ -119,7 +119,7 @@ table_df_from_db <- function(conn_args = config::get("dataconnection"),
 #' @export
 glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
                          user_id = 1234,
-                         from_date= as_datetime("2019-11-01",
+                         from_date= as_datetime("2000-01-01",
                                                 tz = Sys.timezone())){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
