@@ -21,6 +21,7 @@ NOTES_COLUMNS <- c("Sleep", "Event", "Food","Exercise")
 
 #' Read a valid libreview CSV file and return a dataframe and new user id
 #' Since Libreview files don't already include a user ID, append one to the dataframe that is returned.
+#' Importantly, datetimes are assumed to be `Sys.timezone()`.
 #' @title Read a standard format Libreview CSV file
 #' @return a canonical glucose value dataframe
 #' @param file path to a valid Libreview CSV file
@@ -42,7 +43,7 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
   glucose_raw <-
     readr::read_csv(file, skip = skip_lines, col_types = "cccdddddcddddcddddd") %>%
     transmute(
-      timestamp = lubridate::mdy_hm(`Device Timestamp`),
+      timestamp = lubridate::mdy_hm(`Device Timestamp`, tz = Sys.timezone()),
       record_type = `Record Type`,
       glucose_historic = `Historic Glucose mg/dL`,
       glucose_scan = `Scan Glucose mg/dL`,
@@ -118,7 +119,8 @@ table_df_from_db <- function(conn_args = config::get("dataconnection"),
 #' @export
 glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
                          user_id = 1234,
-                         from_date="2019-11-01"){
+                         from_date= as_datetime("2019-11-01",
+                                                tz = Sys.timezone())){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
                         user = conn_args$user,
@@ -180,7 +182,7 @@ glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection")
                                           user_id = factor(user_id))
 
 
-
+  DBI::dbDisconnect(conn)
   glucose_raw
 }
 

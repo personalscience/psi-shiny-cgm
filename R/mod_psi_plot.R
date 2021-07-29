@@ -8,10 +8,11 @@
 psi_plotUI <- function(id) {
 
   ns <- NS(id)
-  mainPanel(
-    numericInput(ns("user_id"), label = "User ID", value = 1235),
+  sidebarLayout(
 
-    flowLayout(
+
+    sidebarPanel(   fluidRow(
+      numericInput(ns("user_id"), label = "User ID", value = 1235),
     dateInput(ns("start_date"), label = "Start Date", value = "2021-06-15" ),
     sliderInput(ns("start_time"), label = "Start Time (Hour)", value = 12, min = 0, max = 23),
     sliderInput(ns("time_length"), label = "Time length (Min)", value = 120, min = 10, max = 480, step = 30),
@@ -20,8 +21,11 @@ psi_plotUI <- function(id) {
     actionButton(ns("submit_food"), label = "Submit Food")
         ),
 
-    checkboxInput(ns("chk_sleep"), label = "Sleep", value = FALSE),
-    plotOutput(ns("psi_plot"))
+    checkboxInput(ns("chk_sleep"), label = "Sleep", value = FALSE)
+    ),
+
+    mainPanel(plotOutput(ns("psi_plot")))
+
   )
 
 }
@@ -33,7 +37,9 @@ mod_psi_plot <- function(id){
 
   moduleServer(id, function(input, output, session) {
     ID<- reactive(input$user_id)
-    start_date <- reactive(input$start_date + lubridate::hours(input$start_time))
+    start_date <- reactive(force_tz(as_datetime(input$start_date),
+                                    tz=Sys.timezone()) +
+                             lubridate::hours(input$start_time))
     go_date <- reactive(if(input$submit_food) psiCGM:::food_times_df()
                         else (input$start_date + lubridate::hours(input$start_time))
     )
@@ -41,14 +47,13 @@ mod_psi_plot <- function(id){
 
     glucose_df <- reactive(
       if(input$zoom_to_date) {
+        mins <- start_date() + lubridate::minutes(input$time_length)
         glucose_df_from_db(user_id = ID(), from_date = start_date()) %>%
-          filter(.data[["time"]] < (start_date() +
-                           lubridate::hours(input$start_time) +
-                           lubridate::minutes(input$time_length)))
+          filter(.data[["time"]] <= mins )
       } else  glucose_df_from_db(user_id = ID(), from_date = start_date())
       )
     output$psi_plot <- renderPlot(psiCGM:::plot_glucose(glucose_df(),
-                                                        title = paste0("User =", username_for_id(ID()))))
+                                                        title = paste0("User =", psiCGM:::username_for_id(ID()))))
     return(glucose_df)
   })
 
@@ -71,4 +76,5 @@ demo_psi_plot <- function(){
   shinyApp(ui, server)
 }
 
-#demo_psi_plot()
+
+demo_psi_plot()

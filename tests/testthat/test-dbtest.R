@@ -6,10 +6,12 @@
 active_env <- Sys.getenv("R_CONFIG_ACTIVE")
 Sys.setenv(R_CONFIG_ACTIVE = "localtest")
 
-db_glucose_df <- glucose_df_from_db()
+db_glucose_df <- glucose_df_from_db(from_date="2021-06-01")
 
 test_that("Glucose Database", {
-  expect_equal(nrow(db_glucose_df), 11138)
+  expect_equal(nrow(db_glucose_df), 1507)
+  expect_equal(as.Date(db_glucose_df[1,1]$time),
+               as.Date("2021-06-11"))
 })
 
 test_that("Max date for user", {

@@ -103,5 +103,7 @@ psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnecti
 #                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1004)
 # )
 
-
+# psi_write_glucose(user_id = 1008,
+#                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1008)
+# )
 

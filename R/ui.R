@@ -25,36 +25,36 @@ ui <- fluidPage(
     # Application title
     h2("Your CGM Data"),
     # Sidebar with file picker
-    sidebarLayout(
-        sidebarPanel(
-
-
-
-
-            psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
-
-            textOutput("show_file")
-
-            # dateRangeInput("daterange1", "Date range:",
-            #                start = "2021-06-01",
-            #                end   = "2021-06-25"),
-        ),
+    # sidebarLayout(
+    #     sidebarPanel(
+    #
+    #
+    #
+    #
+    #         psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
+    #
+    #         textOutput("show_file")
+    #
+    #         # dateRangeInput("daterange1", "Date range:",
+    #         #                start = "2021-06-01",
+    #         #                end   = "2021-06-25"),
+    #     ),
 
         # Show a plot of the glucose levels
         mainPanel(
             fluidRow(
                      psiCGM:::psi_plotUI("psi_filter_plot"),
-                     h2("Analysis"),
-                     textOutput("auc_value")
+                     # h2("Analysis"),
+                     # textOutput("auc_value")
             ),
 
 
             #psiCGM:::userSelectionUI("test1"),
             #plotOutput("glucoseChart")
 
-           psiCGM:::libreviewUI("modchart")
-           #dataTableOutput("glucoseTable")
+           psiCGM:::libreviewUI("modchart"),
+           dataTableOutput("glucoseTable")
         )
-    )
+    #)
 )
 

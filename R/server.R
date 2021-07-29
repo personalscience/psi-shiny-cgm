@@ -37,7 +37,7 @@ server <- function(input, output) {
     #glucose <- reactive(glucose_df_from_db())
     #glucose_current <- reactive(glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
 
-        glucose_current <-reactive(active_glucose_record() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
+        glucose_current <-reactive(active_glucose_record() ) #%>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
 
     output$glucoseTable <- renderDataTable({
         glucose_current()
