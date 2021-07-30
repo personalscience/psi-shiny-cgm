@@ -38,8 +38,8 @@ plot_glucose <- function(glucose_raw, title = "Name") {
 scaled_axis <- function(glucose_raw) {
   time_length <- max(glucose_raw$time) - min(glucose_raw$time)
   if (as.numeric(time_length, units = "days") > 1)
-    return(scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") )
-  else return(scale_x_datetime(date_breaks = "1 hour", date_labels = "%b-%d %H:%M"))
+    return(scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d", timezone = Sys.timezone()) )
+  else return(scale_x_datetime(date_breaks = "15 min", date_labels = "%b-%d %H:%M", timezone = Sys.timezone()))
 }
 
 #' @title Generate a ggplot2 overlay for notes dataframe
