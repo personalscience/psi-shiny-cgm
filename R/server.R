@@ -21,8 +21,6 @@ Sys.setenv(R_CONFIG_ACTIVE = "local")
 #' @import shiny
 #' @import magrittr dplyr
 server <- function(input, output) {
-    message("Server is running...")
-
 
     datafilepath <- psiCGM:::csvFilePathServer("datafile")
 
@@ -34,27 +32,16 @@ server <- function(input, output) {
     active_glucose_record <- psiCGM:::mod_psi_plot("psi_filter_plot")
     message("new active glucose record")
 
-    #glucose <- reactive(glucose_df_from_db())
-    #glucose_current <- reactive(glucose() %>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
-
-        glucose_current <-reactive(active_glucose_record() ) #%>% filter(time>input$daterange1[1] & time < input$daterange1[2] ))
+    glucose_current <-reactive(active_glucose_record() )
 
     output$glucoseTable <- renderDataTable({
         glucose_current()
     })
 
-    output$glucoseChart <- renderPlot(psiCGM:::plot_glucose(glucose_current(),
-                                                            title = "User"
-                                                            # datafilepath()$name),
-    ) + annotate("text", x = glucose_current()$time[1] + lubridate::days(2),
-                 y = 100,
-                 label = paste("AUC=", auc_calc(glucose_current())
-                 )
-    ))
+    output$auc <- renderText(paste("AUC: ",auc_calc(glucose_current())))
 
-   # output$auc_value <- renderText(paste("AUC=", auc_calc(glucose_current())))
 
-   # psiCGM:::mod_cgm_plot_server("modChart", reactive(glucose_current()), title = "inside SErver")
+   psiCGM:::mod_cgm_plot_server("modChart", glucose_current(), title = "inside server")
 
 }
 

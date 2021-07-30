@@ -17,7 +17,7 @@ library(shiny)
 ui <- fluidPage(
 
 
-    includeCSS(file.path("R","www","psi_shiny.css")),
+   # includeCSS(file.path("R","www","psi_shiny.css")),
     # Application title
     titlePanel("Personal Science Experiments", windowTitle = "Personal Science, Inc."),
     tags$a(href="https://personalscience.com", "More details"),
@@ -27,11 +27,7 @@ ui <- fluidPage(
     # Sidebar with file picker
     # sidebarLayout(
     #     sidebarPanel(
-    #
-    #
-    #
-    #
-    #         psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
+      #         psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
     #
     #         textOutput("show_file")
     #
@@ -44,14 +40,11 @@ ui <- fluidPage(
         mainPanel(
             fluidRow(
                      psiCGM:::psi_plotUI("psi_filter_plot"),
-                     # h2("Analysis"),
-                     # textOutput("auc_value")
+
             ),
 
 
-            #psiCGM:::userSelectionUI("test1"),
-            #plotOutput("glucoseChart")
-
+        textOutput("auc"),
            psiCGM:::libreviewUI("modchart"),
            dataTableOutput("glucoseTable")
         )
