@@ -21,12 +21,18 @@ DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Heal
 #' @import ggplot2
 #' @return ggplot object
 plot_glucose <- function(glucose_raw, title = "Name") {
-  auc = auc_calc(glucose_raw)
+
+  g_df <- glucose_raw %>% filter(!is.na(value)) # remove NA values (usually because they're from a strip)
+
+  earliest <- min(g_df[["time"]])
+  latest <- max(g_df[["time"]])
+
+  auc = auc_calc(g_df,as.numeric(difftime(latest,earliest,units="mins")))
   g = ggplot(data = glucose_raw, aes(x=time, y = value) )
   g + psi_theme + geom_line(color = "red")  +
     labs(title = title, x = "", y = "mg/mL",
-         subtitle = paste0("Continuous glucose monitoring (AUC =",
-                          auc, ")"
+         subtitle = paste0("Continuous glucose monitoring",
+                          sprintf("(AUC = %.2f)",auc)
                           )) +
     scaled_axis(glucose_raw) +
     #scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") +
