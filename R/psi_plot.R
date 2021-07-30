@@ -19,6 +19,7 @@ DEFAULT_LIBRELINK_FILE_PATH <- file.path(Sys.getenv("ONEDRIVE"),"General", "Heal
 #' @param glucose_raw dataframe of a valid CGM data stream
 #' @param title string to display on ggplot
 #' @import ggplot2
+#' @export
 #' @return ggplot object
 plot_glucose <- function(glucose_raw, title = "Name") {
 
