@@ -37,17 +37,18 @@ ui <- fluidPage(
     #     ),
 
         # Show a plot of the glucose levels
-        mainPanel(
-            fluidRow(
-                     psiCGM:::psi_plotUI("psi_filter_plot"),
+        sidebarLayout(
+          sidebarPanel(
+              mod_filterUI("psi_filter_plot"),
 
             ),
 
 
         # textOutput("auc"),
-           libreviewUI("modChart"),
+           mainPanel(
+             mod_libreviewUI("modChart")
           # dataTableOutput("glucoseTable")
-        )
-    #)
+        ))
+
 )
 

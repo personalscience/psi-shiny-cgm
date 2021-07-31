@@ -26,21 +26,9 @@ server <- function(input, output) {
 
     output$show_file <- renderText(datafilepath()$name)
 
-    #glucose <- reactive(psiCGM:::glucose_df_from_libreview_csv(datafilepath()$datapath))
-    #active_glucose_record <- psiCGM:::mod_db_selection_server("test1", username = "Server Name Here")
+    active_glucose_record <- mod_filterServer("psi_filter_plot")
 
-    active_glucose_record <- psiCGM:::mod_psi_plot("psi_filter_plot")
-    message("new active glucose record")
-
-    glucose_current <-reactive(active_glucose_record() )
-
-    output$glucoseTable <- renderDataTable({
-        glucose_current()
-    })
-
-    #output$auc <- renderText(paste("AUC: ",auc_calc(active_glucose_record())))
-
-    mod_cgm_plot_server("modChart", active_glucose_record, title = "inside server")
+    g <- mod_cgm_plot_server("modChart", active_glucose_record, title = "inside server")
 
 }
 

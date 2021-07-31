@@ -2,16 +2,29 @@
 
 
 
-libreviewUI <- function(id) {
+#' @title UI for Libreview plots
+#' @description
+#' Plot a Libreview object along with its AUC value
+#' @param id Shiny id
+mod_libreviewUI <- function(id) {
   ns <- NS(id)
 
-  sidebarLayout(sidebarPanel(h3("AUC"),
-                             textOutput(ns("auc_value"))),
-                mainPanel(plotOutput(ns("libreview"))))
+  fluidRow(
+          plotOutput(ns("libreview")),
+          h3("AUC"),
+          textOutput(ns("auc_value")))
 
 }
 
-mod_cgm_plot_server <- function(id,  glucose_df, title="Name") {
+#' @title Make a glucose chart
+#' @description
+#' Given a (reactive) libreview dataframe, this Shiny module will
+#' generate a valid ggplot object and display it in an accompanying UI
+#' @param id shiny module id
+#' @param glucose_df reactive for a valid glucose dataframe
+#' @param title a title for the plot
+#' @return ggplot object representing a glucose chart
+mod_libreview_plotServer <- function(id,  glucose_df, title="Name") {
 
   moduleServer(id, function(input, output, session) {
     # observe({
@@ -24,7 +37,6 @@ mod_cgm_plot_server <- function(id,  glucose_df, title="Name") {
     observeEvent(glucose_df(),
                  {     cat(file=stderr(),
                            sprintf("Your dataframe still has %d rows\n",nrow(glucose_df())))
-                 #  output$auc_value <- renderText(paste0("AUC=",psiCGM::auc_calc(glucose_df())))
                  output$libreview <- renderPlot(psiCGM:::plot_glucose(glucose_df(), title))
                  }
     )
@@ -46,7 +58,7 @@ cgm_demo <- function() {
 
 
   glucose_df <- psiCGM::sample_libreview_df
-  ui <- fluidPage(libreviewUI("x"))
+  ui <- fluidPage(mod_libreviewUI("x"))
   server <- function(input, output, session) {
     mod_cgm_plot_server("x", reactive(glucose_df))
   }
