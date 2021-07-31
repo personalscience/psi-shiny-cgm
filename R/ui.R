@@ -17,24 +17,13 @@ library(shiny)
 ui <- fluidPage(
 
 
-    includeCSS(file.path("R","www","psi_shiny.css")),
+    #includeCSS(file.path("R","www","psi_shiny.css")),
     # Application title
     titlePanel("Personal Science Experiments", windowTitle = "Personal Science, Inc."),
     tags$a(href="https://personalscience.com", "More details"),
 
     # Application title
     h2("Your CGM Data"),
-    # Sidebar with file picker
-    # sidebarLayout(
-    #     sidebarPanel(
-      #         psiCGM:::csvFileUI("datafile", "Libreview CSV file"),
-    #
-    #         textOutput("show_file")
-    #
-    #         # dateRangeInput("daterange1", "Date range:",
-    #         #                start = "2021-06-01",
-    #         #                end   = "2021-06-25"),
-    #     ),
 
         # Show a plot of the glucose levels
         sidebarLayout(

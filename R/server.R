@@ -27,8 +27,13 @@ server <- function(input, output) {
     output$show_file <- renderText(datafilepath()$name)
 
     active_glucose_record <- mod_filterServer("psi_filter_plot")
+    username<-reactive(psiCGM:::username_for_id(active_glucose_record()[["user_id"]][1]))
 
-    g <- mod_cgm_plot_server("modChart", active_glucose_record, title = "inside server")
+    observe(
+        cat(stderr(), sprintf("username=%s \n",username()))
+    )
+
+    g <- mod_libreview_plotServer("modChart", active_glucose_record, title = username)
 
 }
 

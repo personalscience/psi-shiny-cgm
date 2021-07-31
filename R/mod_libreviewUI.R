@@ -36,8 +36,8 @@ mod_libreview_plotServer <- function(id,  glucose_df, title="Name") {
 
     observeEvent(glucose_df(),
                  {     cat(file=stderr(),
-                           sprintf("Your dataframe still has %d rows\n",nrow(glucose_df())))
-                 output$libreview <- renderPlot(psiCGM:::plot_glucose(glucose_df(), title))
+                           sprintf("User %s dataframe still has %d rows\n",title(), nrow(glucose_df())))
+                 output$libreview <- renderPlot(psiCGM:::plot_glucose(glucose_df(), title()))
                  }
     )
 
@@ -54,13 +54,14 @@ mod_libreview_plotServer <- function(id,  glucose_df, title="Name") {
 }
 
 
+#' @title Demo the libreviewUI
 cgm_demo <- function() {
 
 
   glucose_df <- psiCGM::sample_libreview_df
   ui <- fluidPage(mod_libreviewUI("x"))
   server <- function(input, output, session) {
-    mod_cgm_plot_server("x", reactive(glucose_df))
+    mod_libreview_plotServer("x", reactive(glucose_df), reactiveVal("Username"))
   }
   shinyApp(ui, server)
 
