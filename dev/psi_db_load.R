@@ -1,6 +1,7 @@
 # Script to load database tables
 # Assumes existence of `glucose_records`
-
+# To erase the current glucose_records table from the database and start over:
+# psi_fill_database_from_scratch(drop=TRUE)
 
 
 # see more examples at https://rpostgres.r-dbi.org/
@@ -63,6 +64,42 @@ psi_write_glucose <- function(conn_args = config::get("dataconnection"),
 
 }
 
+#' @title Write a Notes CSV to the notes table in the database
+#' @description
+#' WARNING: Only run this on a fresh clean notes_records table.
+#' @param user_id user ID
+#' @param new_table valid formatted notes dataframe
+#' @param dry_run (default = TRUE). Run without actually writing to the database
+psi_write_notes <- function(conn_args = config::get("dataconnection"),
+                               user_id = 1235,
+                               new_table=notes_df_from_csv(user_id = 1235),
+                            dry_run = TRUE) {
+
+    con <- DBI::dbConnect(
+        drv = conn_args$driver,
+        user = conn_args$user,
+        host = conn_args$host,
+        port = conn_args$port,
+        dbname = conn_args$dbname,
+        password = conn_args$password
+    )
+
+    ID <- user_id
+    message("write notes records")
+
+    if(dry_run){
+        message("not going to actually write this")
+    } else {
+    # uncomment the following line to do the actual write to db
+    DBI::dbWriteTable(con, name = "notes_records", value = new_table, row.names = FALSE, append = TRUE)
+    }
+    return(new_table)
+
+
+    DBI::dbDisconnect(con)
+}
+
+
 #' @description
 #'  For debugging and dev purposes only. Loads the database tables from scratch.
 psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnection"),
@@ -99,11 +136,13 @@ psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnecti
 
 # uncomment this section to add an arbitrary new CSV file
 # be sure to set both user_ids
-# psi_write_glucose(user_id = 1004,
-#                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1004)
-# )
+# Write Andreos:
+psi_write_glucose(user_id = 1004,
+                  new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1004)
+)
 
-# psi_write_glucose(user_id = 1008,
-#                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1008)
-# )
+# write Bude:
+psi_write_glucose(user_id = 1008,
+                  new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1008)
+)
 

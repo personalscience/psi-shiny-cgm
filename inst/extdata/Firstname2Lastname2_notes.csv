@@ -1,4 +1,4 @@
-﻿Start,End,Activity,Comment,Z
+Start,End,Activity,Comment,Z
 1/9/19 11:01,,Food,Bagel,NA
 1/9/19 12:01,,Food,Sweet potato beans,NA
 1/9/19 13:00,,Food,Chocolate cake,NA
@@ -786,7 +786,7 @@
 12/3/19 13:47,12/3/19 14:28,Sleep,,0.683333333
 12/3/19 18:30,,Food,Minestrone soup,NA
 12/3/19 22:02,12/4/19 1:04,Sleep,,3.033333333
-12/4/19 1:06,12/4/19 5:59,sleep,,4.883333333
+12/4/19 1:06,12/4/19 5:59,Sleep,,4.883333333
 12/4/19 6:20,,Food,Bone broth,NA
 12/4/19 9:00,,Food,Cafe latte,NA
 12/4/19 12:30,,Food,Jambalaya,NA
@@ -889,7 +889,7 @@
 3/3/20 18:45,,Food,Chicken banana bread beans,NA
 3/3/20 21:08,3/4/20 4:45,Sleep,,7.616666667
 3/4/20 5:00,,Food,Latte,NA
-3/4/20 9:00,,Activity,End Sensor,NA
+3/4/20 9:00,,Event,End Sensor,NA
 3/4/20 22:12,3/5/20 5:38,Sleep,,7.433333333
 3/5/20 22:36,3/6/20 4:56,Sleep,,6.333333333
 3/6/20 21:56,3/7/20 6:03,Sleep,,8.116666667

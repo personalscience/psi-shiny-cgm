@@ -1,7 +1,7 @@
 # create_db
 # Use this script only once: to set up the initial database and scheme
 # If your Postgres database is already set up and running, you should be able to simply 'source' this script
-# and it will automaticaly create the database 'qsdev' and a table 'glucose_records'
+# and it will automatically create the database 'qsdev' and a table 'glucose_records'
 # Note: nothing bad should happen if you source this on an existing database (i.e. nothing will happen)
 
 library(tidyverse)

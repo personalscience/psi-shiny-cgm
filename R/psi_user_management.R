@@ -1,6 +1,7 @@
 # psi User Management Functions
 
 #' @title All user records in the database
+#' @param conn_args database connection
 #' @return dataframe of all user records
 user_df_from_db <- function(conn_args = config::get("dataconnection")){
   con <- DBI::dbConnect(

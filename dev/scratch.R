@@ -1,4 +1,5 @@
 
+library(psiCGM)
 library(tidyverse)
 library(lubridate)
 
@@ -16,6 +17,17 @@ from_date= as_datetime("2021-06-15",
 
 ID <- c(1234,1008)
 
+food_records <- tbl(con, conn_args$glucose_table) %>%
+  filter(user_id == 1234) %>%
+  filter(!is.na(food)) %>% collect() %>%
+  transmute(Start = time,
+            End = NA,
+            Activity = "Food",
+            Comment = as.character(stringr::str_replace(food,"Notes=","")),
+            Z = as.numeric(NA),
+            user_id = user_id)
+
+
 #' @description
 #' Given a dataframe, returns a logical
 my_filter <- function(x, ID = 1235){
@@ -28,6 +40,23 @@ max_date_filter <- function(x, ID = 1234) {
   filter(filter(x, user_id %in% ID),
          time == max(time))
 }
+
+file=file.path(Sys.getenv("ONEDRIVE"),
+              "General","Health",
+              "RichardSprague_glucose.csv")
+
+
+readr::read_csv(file, skip = 2, col_types = "cccdddddcddddcddddd") %>%
+  transmute(
+    timestamp = lubridate::mdy_hm(`Device Timestamp`, tz = Sys.timezone()),
+    record_type = `Record Type`,
+    glucose_historic = `Historic Glucose mg/dL`,
+    glucose_scan = `Scan Glucose mg/dL`,
+    strip_glucose = `Strip Glucose mg/dL`,
+    notes = if_else(!is.na(Notes), paste0("Notes=",Notes),
+                    Notes)
+  ) %>% filter(!is.na(notes))
+
 
 glucose_df_from_db(db_filter = max_date_filter) %>% pull(time) %>% head(1)
 

@@ -48,11 +48,12 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
       glucose_historic = `Historic Glucose mg/dL`,
       glucose_scan = `Scan Glucose mg/dL`,
       strip_glucose = `Strip Glucose mg/dL`,
-      notes = Notes
+      notes = if_else(!is.na(Notes), paste0("Notes=",Notes),
+                      Notes)
     )
 
   glucose_df <- glucose_raw  %>%
-    dplyr::filter(record_type != 6) %>% # Record type 6 does nothing
+    #dplyr::filter(record_type != 6) %>% # Record type 6 does nothing
     transmute(time = `timestamp`,
               scan = glucose_scan,
               hist = glucose_historic,
@@ -66,10 +67,12 @@ glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
 }
 
 #' @title Notes dataframe from a CSV
+#' @description Return a canonical notes dataframe from a properly-constructed Notes CSV file.
 #' @param file path to a valid notes CSV file
+#' @param user_id user ID to associate with this dataframe
 #' @return dataframe for a valid notes CSV file
 #' @export
-notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1_activity.csv"),
+notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1_notes.csv"),
                               user_id = 1235) {
 
   notes <- read_csv(file,
@@ -80,6 +83,41 @@ notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1
   notes$Start <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
   notes$End <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
   return(bind_cols(notes,user_id = user_id))
+}
+
+#' @title Return all `glucose_records` that have something in the notes field
+#' @param conn_args valid database connection with a `glucose_records` table
+#' @param user_id User ID
+#' @return dataframe of
+#' @export
+#'
+notes_df_from_glucose_table <- function(conn_args = config::get("dataconnection"),
+                             user_id = 1234) {
+  con <- DBI::dbConnect(
+    drv = conn_args$driver,
+    user = conn_args$user,
+    host = conn_args$host,
+    port = conn_args$port,
+    dbname = conn_args$dbname,
+    password = conn_args$password
+  )
+
+  ID = user_id
+
+  food_records <- tbl(con, conn_args$glucose_table) %>%
+    filter(user_id == ID) %>%
+    filter(!is.na(food)) %>% collect() %>%
+    transmute(Start = time,
+              End = NA,
+              Activity = "Food",
+              Comment = as.character(stringr::str_replace(food,"Notes=","")),
+              Z = as.numeric(NA),
+              user_id = user_id)
+
+
+  DBI::dbDisconnect(con)
+  return(food_records)
+
 }
 
 
@@ -159,7 +197,7 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
 #' For example `read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))`
 #' @return A valid glucose dataframe
 glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection"),
-                                         ID=13,
+                                         ID=1234,
                                          startTime=now()-hours(36),
                                          timelength=120){
 
@@ -176,18 +214,19 @@ glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection")
   cutoff_2 <- as_datetime(startTime + minutes(timelength))
 
   glucose_df <- tbl(con, conn_args$glucose_table)  %>%
-    filter(user_id %in% ID & record_date_time >= cutoff_1 &
-             record_date_time <= cutoff_2) %>% collect()
+    filter(user_id %in% ID & time >= cutoff_1 &
+             time <= cutoff_2) %>% collect()
 
   #  filter(user_id == ID & (record_date+record_time) >= startTime & (record_date+record_time) <= (startTime + timelength)) %>% collect()# & top_n(record_date,2))# %>%
 
-  glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(record_date) + record_time, Sys.timezone()),
-                                          scan = value, hist = value, strip = NA, value = value,
-                                          food = as.character(stringr::str_match(notes,"Notes=.*")),
-                                          user_id = factor(user_id))
+  glucose_raw <- glucose_df %>% transmute(  time = force_tz(as_datetime(time), Sys.timezone()),
+                                            scan = value, hist = value, strip = NA, value = value,
+                                            food = as.character(stringr::str_match(food,"Notes=.*")),
+                                            user_id = user_id)
 
 
-  DBI::dbDisconnect(conn)
+
+  DBI::dbDisconnect(con)
   glucose_raw
 }
 
@@ -261,6 +300,7 @@ notes_df_from_db <- function(conn_args=config::get("dataconnection"),
 #' @param foodname a string indicating a specific food
 #' @import DBI stringr
 #' @return a valid glucose dataframe containing records matching `food`
+#' @export
 glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
                                 user_id = 1235,
                                 foodname = "blueberries"){
@@ -316,7 +356,7 @@ food_times_df <- function(ID=13, timeLength=120, foodname="apple juice"){
   for(user in ID){
     g <- f %>% filter(user_id==user)
     for(t in g$time){
-      new_segment_df <- read_glucose_for_users_at_time(ID=user, startTime = t) %>%
+      new_segment_df <- glucose_df_for_users_at_time(ID=user, startTime = t) %>%
         mutate(meal=paste0(user,"-",month(as_datetime(t)),"/",day(as_datetime(t))),
                user_id=factor(user_id, levels = original_levels))
       df <- bind_rows(df,make_zero_time_df(new_segment_df))
@@ -337,6 +377,7 @@ food_times_df <- function(ID=13, timeLength=120, foodname="apple juice"){
 #' @param table_name the table in which to find the latest record (currently fixed at `glucose-records`)
 #' @return a date object representing the most recent record in the database for this user. NA if there are no records.
 #' @import DBI
+#' @export
 max_date_for_user <-
   function(conn_args = config::get("dataconnection"),
            user_id = 1234,
