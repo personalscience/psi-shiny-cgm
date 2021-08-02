@@ -114,13 +114,15 @@ table_df_from_db <- function(conn_args = config::get("dataconnection"),
 #' @title Read from database a dataframe of glucose values for user_id ID
 #' @param from_date a string representing the date from which you want to read the glucose values
 #' @param user_id ID for a specific user in the database.
+#' @param db_filter A function for filtering the database. Use instead of `from_date` or `user_id`
 #' @return a dataframe (tibble) with the full Libreview results since fromDate for user_id
 #' @description Reads from the current default database the glucose values for user_id ID.
 #' @export
 glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
                          user_id = 1234,
                          from_date= as_datetime("2000-01-01",
-                                                tz = Sys.timezone())){
+                                                tz = Sys.timezone()),
+                         db_filter = NULL){
 
   con <- DBI::dbConnect(drv = conn_args$driver,
                         user = conn_args$user,
@@ -135,10 +137,13 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
   ## TODO this section can be optimized with a direct SQL call instead of
   ## dealing with dataframes.
 
-
-
-  glucose_df <-tbl(con, conn_args$glucose_table) %>%
+  if(!is.null(db_filter)){
+    glucose_df <- tbl(con, conn_args$glucose_table)  %>%
+      db_filter() %>% collect()
+  } else {
+    glucose_df <-tbl(con, conn_args$glucose_table) %>%
     dplyr::filter(user_id %in% ID & time >= from_date) %>% collect() # & top_n(record_date,2))# %>%
+  }
 
   glucose_raw <- glucose_df %>% transmute(time = force_tz(as_datetime(time), Sys.timezone()),
                                           scan = value, hist = value, strip = NA, value = value,

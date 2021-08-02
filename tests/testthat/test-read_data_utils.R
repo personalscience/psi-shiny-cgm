@@ -11,4 +11,10 @@ test_that("Notes file contains correct entries", {
 
 })
 
+test_that("Max date is correct",{
+  expect_equal(psiCGM:::max_date_for_user(user_id=1234),
+               as_datetime(1624603560)) ## TODO must change to correct time zone.
+               #lubridate::as_datetime("2021-06-25 13:46:00 UTC"))
+})
+
 Sys.setenv(R_CONFIG_ACTIVE = active_env )
