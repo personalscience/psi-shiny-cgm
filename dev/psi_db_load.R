@@ -67,6 +67,7 @@ psi_write_glucose <- function(conn_args = config::get("dataconnection"),
 #' @title Write a Notes CSV to the notes table in the database
 #' @description
 #' WARNING: Only run this on a fresh clean notes_records table.
+#' psi_write_notes(user_id = 1234, new_table = notes_df_from_glucose_table(user_id = 1234))
 #' @param user_id user ID
 #' @param new_table valid formatted notes dataframe
 #' @param dry_run (default = TRUE). Run without actually writing to the database

@@ -237,7 +237,7 @@ glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection")
 #' @param fromDate (optional) earliest date from which to return notes
 #' @return dataframe representation of all notes for that user
 #' @export
-notes_df_from_db <- function(conn_args=config::get("dataconnection"),
+notes_df_from_notes_table <- function(conn_args=config::get("dataconnection"),
                     user_id=1235,
                     fromDate="2019-11-01"){
 
@@ -251,38 +251,10 @@ notes_df_from_db <- function(conn_args=config::get("dataconnection"),
                         password = conn_args$password)
 
   notes_df <- tbl(con, "notes_records") %>%   filter(user_id %in% ID ) %>%
-    collect() %>% mutate(Activity = factor(Activity),
-                         user_id = factor(ID))
-
-  notes_records <- notes_df %>%
-    mutate(Comment = stringr::str_to_lower(Comment))
-
-  # glucose_df <- tbl(con, conn_args$glucose_table)  %>%
-  #   filter(user_id %in% ID & record_date >= from_date) %>% collect() %>%
-  #   transmute(time = force_tz(as_datetime(record_date) + record_time, Sys.timezone()),
-  #                                         scan = value, hist = value, strip = NA, value = value,
-  #                                         food = as.character(stringr::str_match(notes,"Notes=.*")),
-  #                                         user_id = factor(ID))
-  #
-  #
-  # nr <- glucose_df %>%
-  #   filter(!is.na(food)) %>%
-  #   select(Start = time, Comment= food, user_id) %>%
-  #   mutate(Activity=factor("Food"),
-  #          Comment = stringr::str_replace(as.character(Comment),"Notes=",""),
-  #          End=as_datetime(NA), Z=as.numeric(NA),
-  #          user_id = factor(ID))
-  #
-  # # consider
-  # all_levels <- forcats::lvls_union(list(nr$user_id,notes_df$user_id))
-  #
-  # notes_records <- nr %>% mutate(user_id=factor(user_id,all_levels)) %>%
-  #                                  bind_rows(notes_df %>% mutate(user_id=factor(user_id,all_levels))) %>%
-  #                                  mutate(Activity=factor(Activity),
-  #                                         user_id=factor(user_id, all_levels))
+    collect()
 
   DBI::dbDisconnect(con)
-  return(notes_records)
+  return(notes_df)
 
 
 }
@@ -316,7 +288,7 @@ glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
 
   ID <-  user_id
 
-  nf <- notes_df_from_db(conn_args, user_id = ID) %>%
+  nf <- notes_df_from_notes_table(conn_args, user_id = ID) %>%
     filter(stringr::str_detect(Comment, foodname))
 
   return(nf)

@@ -15,11 +15,12 @@ mod_filterUI <- function(id) {
       sliderInput(ns("start_hour"), label = "Start Time (Hour)", value = 12, min = 0, max = 23),
       sliderInput(ns("time_length"), label = "Time length (Min)", value = 120, min = 10, max = 480, step = 30),
       checkboxInput(ns("zoom_to_date"), label = "Zoom Day", value = FALSE),
-      textInput(ns("zoom_to_food"), label = "Food"),
+      textInput(ns("zoom_to_food"), label = "Food", value = "blueberries"),
       actionButton(ns("submit_food"), label = "Submit Food"),
 
 
-    checkboxInput(ns("chk_sleep"), label = "Sleep", value = FALSE)
+    checkboxInput(ns("chk_sleep"), label = "Sleep", value = FALSE),
+    textOutput(ns("show_food"))
     )
 }
 
@@ -38,14 +39,18 @@ mod_filterServer <- function(id){
     )
 
 
-    glucose_df <- reactive(
+    glucose_df <- reactive({
+
+      if(input$submit_food){ output$show_food <- renderText(paste("You made it!", input$zoom_to_food))
+      }
+
       if(input$zoom_to_date) {
 
         glucose_df_from_db(user_id = ID()) %>%
           filter(time >= start_date()) %>%
           filter(time <= start_date() + lubridate::minutes(input$time_length))
       } else  glucose_df_from_db(user_id = ID()) %>% filter(time >= start_date())
-    )
+    })
     return(glucose_df)
   })
 
@@ -57,7 +62,7 @@ demo_filter <- function(){
 
 
   ui <- fluidPage(
-    psi_filterUI("x"),
+    mod_filterUI("x"),
     dataTableOutput("table")
   )
 
