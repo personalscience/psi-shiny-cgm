@@ -12,77 +12,33 @@ con <- DBI::dbConnect(drv = conn_args$driver,
                       password = conn_args$password)
 
 
+tbl(con,"notes_records") %>% filter(user_id == 1235 & !is.na(Comment)) %>% collect() %>% group_by(Comment) %>% add_count() %>% filter(n>1)
+
 from_date= as_datetime("2021-06-15",
                        tz = Sys.timezone())
 
-ID <- c(1234,1008)
+foodname = "watermelon"
 
-tbl(con, "notes_records") %>% filter(user_id == 1234) %>%
-  filter(Start == max(Start, na.rm = TRUE)) %>%
-  pull(Start)
+ID <- c(1234,1008,1235)
+user_id = 1235
 
-#' @description
-#' Given a dataframe, returns a logical
-my_filter <- function(x, ID = 1235){
-  filter(filter(x, user_id %in% c(1234,1008)),
-         time >= lubridate::as_datetime("2021-06-15",
-                             tz = Sys.timezone()))
+f <- glucose_for_food_df(user_id = 1235, foodname=foodname)
+f$user_id
+f
+
+original_levels <- levels(f$user_id) # to prevent a conversion of id_user to char later
+
+ID = user_id
+
+df <- NULL
+for(user in ID){
+  g <- f %>% filter(user_id==user)
+  for(t in g$Start){
+    new_segment_df <- glucose_df_for_users_at_time(user_id =user, startTime = lubridate::as_datetime(t,tz=Sys.timezone())) %>%
+      mutate(meal=paste0(user,"-",month(as_datetime(t)),"/",day(as_datetime(t))),
+             user_id=factor(user_id, levels = original_levels))
+    df <- bind_rows(df,make_zero_time_df(new_segment_df))
+  }
 }
+df
 
-max_date_filter <- function(x, ID = 1234) {
-  filter(filter(x, user_id %in% ID),
-         time == max(time))
-}
-
-file=file.path(Sys.getenv("ONEDRIVE"),
-              "General","Health",
-              "RichardSprague_glucose.csv")
-
-
-readr::read_csv(file, skip = 2, col_types = "cccdddddcddddcddddd") %>%
-  transmute(
-    timestamp = lubridate::mdy_hm(`Device Timestamp`, tz = Sys.timezone()),
-    record_type = `Record Type`,
-    glucose_historic = `Historic Glucose mg/dL`,
-    glucose_scan = `Scan Glucose mg/dL`,
-    strip_glucose = `Strip Glucose mg/dL`,
-    notes = if_else(!is.na(Notes), paste0("Notes=",Notes),
-                    Notes)
-  ) %>% filter(!is.na(notes))
-
-
-glucose_df_from_db(db_filter = max_date_filter) %>% pull(time) %>% head(1)
-
-tbl(con, conn_args$glucose_table) %>%
-  filter(user_id == 1234) %>%
-  filter(time == max(time, na.rm = TRUE)) %>% show_query()
-  pull(time) %>% show_query()
-
-glucose_df_from_db() %>% filter(user_id == 1235)
-
-tbl(con, conn_args$glucose_table) %>% filter(user_id == 1235) %>% filter(time >= "2021-06-15") #%>% show_query()
-
-tbl(con, conn_args$glucose_table) %>% my_filter() %>% show_query()
-
-tbl(con, conn_args$glucose_table) %>% filter(is.na(value)) %>% show_query()
-
-tbl(con, conn_args$glucose_table) %>% filter(time > (today() - weeks(6))) # %>% show_query()
-tbl(con, conn_args$glucose_table) %>% filter(time > as_datetime("2021-06-01"))  %>% show_query()
-tbl(con, conn_args$glucose_table) %>% filter(time > "2021-06-01" & time < "2021-06-02") %>% head(3) %>% show_query()
-
-
-
-as_datetime("2021-06-01", tz = "America/Los_Angeles")
-
-q <- sprintf('SELECT * FROM "glucose_records" WHERE ("time" > \'2021-06-01\' ) LIMIT 10')
-
-DBI::dbGetQuery(con, q)
-
-x <- tbl(con, conn_args$glucose_table) %>% dplyr::filter(user_id %in% ID & time >= from_date)
-tbl(con, conn_args$glucose_table) %>% filter(.data[["user_id"]] == 1008)
-
-tbl(con, conn_args$glucose_table) %>% transmute(time = time,
-                                                scan = value, hist = value, strip = NA, value = value,
-                                                food = food,
-                                                user_id = user_id)
-q

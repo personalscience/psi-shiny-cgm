@@ -196,8 +196,9 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
 #' @description
 #' For example `read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))`
 #' @return A valid glucose dataframe
+#' @export
 glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection"),
-                                         ID=1234,
+                                         user_id=1234,
                                          startTime=now()-hours(36),
                                          timelength=120){
 
@@ -209,6 +210,7 @@ glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection")
                         dbname = conn_args$dbname,
                         password = conn_args$password)
 
+  ID = user_id
 
   cutoff_1 <- as_datetime(startTime)
   cutoff_2 <- as_datetime(startTime + minutes(timelength))
@@ -295,7 +297,10 @@ glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
 }
 
 
-# converts the timestamp into time objects
+#' @title Convert the timestamp into time objects
+#' @param times_vector vector of start times.
+#' @return a vector normalized to the beginning of the sequence
+#' @export
 zero_time <- function(times_vector){
   start <- min(times_vector)
 
@@ -303,6 +308,10 @@ zero_time <- function(times_vector){
 
 }
 
+#' @title Normalize time dataframe to zero
+#' @param df valid glucose dataframe
+#' @return dataframe
+#' @export
 make_zero_time_df <- function(df){
   return(arrange(df,time) %>% transmute(t=zero_time(time),
                                         value=value,
@@ -310,7 +319,10 @@ make_zero_time_df <- function(df){
                                         user_id=user_id))
 }
 
-# return a new df where value are normalized to start from zero.
+#' @title return a new df where value are normalized to start from zero.
+#' @param df dataframe
+#' @return dataframe
+#' @export
 normalize_value <- function(df){
   return(df %>% mutate(value=value-first(value)))
 
@@ -318,23 +330,36 @@ normalize_value <- function(df){
 }
 
 
-# return a dataframe of the first timeLength glucose values for every record that includes foodname
-food_times_df <- function(ID=13, timeLength=120, foodname="apple juice"){
-  f <- records_with_food(ID=ID, foodname=foodname)
+#' @title Glucose values after eating a specific food
+#' @description
+#' return a dataframe of the Glucose values for a `timeLength`
+#' following `foodname` appearing in `notes_records`
+#' @param user_id user ID
+#' @param foodname character string representing the food item of interest
+#' @param timeLength number of minutes for the glucose record to show after the food was eaten.
+#' @return dataframe
+#' @export
+food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon"){
 
-  original_levels <- levels(f$user_id) # to prevent a conversion of id_user to char later
+
+  f <- glucose_for_food_df(user_id = user_id, foodname=foodname)
+
+
+ # original_levels <- factor(f$user_id) # to prevent a conversion of id_user to char later
+
+  ID = user_id
 
   df <- NULL
   for(user in ID){
     g <- f %>% filter(user_id==user)
-    for(t in g$time){
-      new_segment_df <- glucose_df_for_users_at_time(ID=user, startTime = t) %>%
+    for(t in g$Start){
+      new_segment_df <- glucose_df_for_users_at_time(user_id =user, startTime = lubridate::as_datetime(t,tz=Sys.timezone())) %>%
         mutate(meal=paste0(user,"-",month(as_datetime(t)),"/",day(as_datetime(t))),
-               user_id=factor(user_id, levels = original_levels))
+               user_id = factor(user_id)) #user_id=factor(user_id, levels = original_levels))
+
       df <- bind_rows(df,make_zero_time_df(new_segment_df))
     }
   }
-
   return(df)
 }
 
