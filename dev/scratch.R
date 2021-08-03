@@ -17,16 +17,9 @@ from_date= as_datetime("2021-06-15",
 
 ID <- c(1234,1008)
 
-food_records <- tbl(con, conn_args$glucose_table) %>%
-  filter(user_id == 1234) %>%
-  filter(!is.na(food)) %>% collect() %>%
-  transmute(Start = time,
-            End = NA,
-            Activity = "Food",
-            Comment = as.character(stringr::str_replace(food,"Notes=","")),
-            Z = as.numeric(NA),
-            user_id = user_id)
-
+tbl(con, "notes_records") %>% filter(user_id == 1234) %>%
+  filter(Start == max(Start, na.rm = TRUE)) %>%
+  pull(Start)
 
 #' @description
 #' Given a dataframe, returns a logical

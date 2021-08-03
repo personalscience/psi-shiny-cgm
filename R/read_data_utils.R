@@ -81,7 +81,7 @@ notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1
                                      Activity = col_factor(levels = NOTES_COLUMNS)))
 
   notes$Start <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
-  notes$End <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
+  notes$End <- lubridate::force_tz(notes$End, tzone=Sys.timezone())
   return(bind_cols(notes,user_id = user_id))
 }
 
@@ -289,7 +289,7 @@ glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
   ID <-  user_id
 
   nf <- notes_df_from_notes_table(conn_args, user_id = ID) %>%
-    filter(stringr::str_detect(Comment, foodname))
+    filter(stringr::str_detect(stringr::str_to_lower(Comment), stringr::str_to_lower(foodname)))
 
   return(nf)
 }

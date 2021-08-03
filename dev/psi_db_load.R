@@ -3,6 +3,8 @@
 # To erase the current glucose_records table from the database and start over:
 # psi_fill_database_from_scratch(drop=TRUE)
 
+# To erase all notes_records and start over:
+# DBI::dbRemoveTable(con, "notes_records")
 
 # see more examples at https://rpostgres.r-dbi.org/
 library(tidyverse)
@@ -16,9 +18,6 @@ Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
 # Sys.setenv(R_CONFIG_ACTIVE = "default") # save to sqlite
 # Sys.setenv(R_CONFIG_ACTIVE = "cloud")
 
-# run the following script to load these variables.
-# glucose_records, notes_records, sleep_and_hr
-# source("util/read_glucose_data.R")  # read raw glucose, notes, and watch data.
 
 #' @title Write a glucose dataframe to the database
 #' @description
@@ -54,8 +53,6 @@ psi_write_glucose <- function(conn_args = config::get("dataconnection"),
     # uncomment the following line to do the actual write to db
    DBI::dbWriteTable(con, name = "glucose_records", value = new_records, row.names = FALSE, append = TRUE)
 
-    message("write notes records (not working yet)")
-
     # uncomment the following line
     # DBI::dbWriteTable(con, name = "notes_records", value = notes_records, row.names = FALSE, overwrite = TRUE)
 
@@ -64,9 +61,11 @@ psi_write_glucose <- function(conn_args = config::get("dataconnection"),
 
 }
 
+
+
 #' @title Write a Notes CSV to the notes table in the database
 #' @description
-#' WARNING: Only run this on a fresh clean notes_records table.
+#' WARNING: this may not work correctly. debug before using
 #' psi_write_notes(user_id = 1234, new_table = notes_df_from_glucose_table(user_id = 1234))
 #' @param user_id user ID
 #' @param new_table valid formatted notes dataframe
@@ -88,13 +87,36 @@ psi_write_notes <- function(conn_args = config::get("dataconnection"),
     ID <- user_id
     message("write notes records")
 
+    if (DBI::dbExistsTable(con, "notes_records"))
+        {message("Table 'notes_records' already exists")
+    } else {
+        message(paste("Writing to notes_records"))
+        DBI::dbWriteTable(con, name = "notes_records", value = new_table, overwrite=TRUE)
+    }
+
+    maxDate <-
+        tbl(con, "notes_records") %>%
+        filter(user_id == ID) %>%
+        filter(Start == max(Start, na.rm = TRUE)) %>% collect() %>%
+        pull(Start)
+
+    maxDate <- if(length(maxDate)>0) maxDate else {tbl(con, "notes_records") %>%
+            filter(Start == min(Start)) %>% collect() %>% pull(Start) }
+
+    new_records <-
+        new_table %>%  dplyr::filter(user_id == ID) %>%
+        dplyr::filter(Start > {if(is.na(maxDate)) min(Start) else maxDate})
+
+
+
+
     if(dry_run){
         message("not going to actually write this")
     } else {
     # uncomment the following line to do the actual write to db
-    DBI::dbWriteTable(con, name = "notes_records", value = new_table, row.names = FALSE, append = TRUE)
+    DBI::dbWriteTable(con, name = "notes_records", value = new_records, row.names = FALSE, append = TRUE)
     }
-    return(new_table)
+    return(new_records)
 
 
     DBI::dbDisconnect(con)
@@ -118,6 +140,8 @@ psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnecti
     if(drop) {
         message("removing glucose records table")
         DBI::dbRemoveTable(con, "glucose_records")
+        message("removing notes records")
+        DBI::dbRemoveTable(con, "notes_records")
     }
     martha_glucose <- file.path("/Users/sprague/dev/psi/psiCGM/inst/extdata/Firstname1Lastname1_glucose.csv")
     richard_glucose <- file.path("/Users/sprague/dev/psi/psiCGM/inst/extdata/Firstname2Lastname2_glucose.csv")
@@ -125,14 +149,23 @@ psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnecti
     psi_write_glucose(conn_args = conn_args,
                       user_id = 1235,
                       new_table=glucose_df_from_libreview_csv(file = martha_glucose, user_id = 1235))
+
+    message("Write Martha notes")
+    psi_write_notes(user_id = 1235, new_table=notes_df_from_csv(user_id = 1235))
+
     message("write Richard glucose records")
     psi_write_glucose(conn_args = conn_args,
                       user_id = 1234,
                       new_table=glucose_df_from_libreview_csv(file = richard_glucose, user_id = 1234))
 
+ #  message("Append Richard Notes records (from glucose_records")
+    DBI::dbWriteTable(con, name = "notes_records", value = notes_df_from_glucose_table(user_id=1234), row.names = FALSE, append = TRUE)
+  # psi_write_notes(user_id = 1234, new_table = notes_df_from_glucose_table(user_id = 1234), dry_run = FALSE)
+
     message("finished writing")
 
 }
+
 
 
 # uncomment this section to add an arbitrary new CSV file
@@ -141,8 +174,7 @@ psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnecti
 psi_write_glucose(user_id = 1004,
                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1004)
 )
-
-# write Bude:
+#write Bude:
 psi_write_glucose(user_id = 1008,
                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1008)
 )

@@ -143,9 +143,9 @@ psi_table_df <-
 psi_make_database_if_necessary()
 psi_list_objects()
 
-psi_make_table_if_necessary(table = psiCGM:::glucose_df_from_libreview_csv())
-psi_make_table_if_necessary(table_name = "notes_records", table = psiCGM:::notes_df_from_csv())
-psi_make_table_if_necessary(table_name = "user_list", table = psiCGM::user_df_from_libreview)
+psi_make_table_if_necessary(table = glucose_df_from_libreview_csv())
+psi_make_table_if_necessary(table_name = "notes_records", table = notes_df_from_csv())
+psi_make_table_if_necessary(table_name = "user_list", table = user_df_from_libreview)
 
 
 
