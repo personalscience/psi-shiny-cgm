@@ -6,6 +6,7 @@
 #' @description
 #' Plot a Libreview object along with its AUC value
 #' @param id Shiny id
+#' @export
 mod_libreviewUI <- function(id) {
   ns <- NS(id)
 
@@ -24,6 +25,7 @@ mod_libreviewUI <- function(id) {
 #' @param glucose_df reactive for a valid glucose dataframe
 #' @param title a title for the plot
 #' @return ggplot object representing a glucose chart
+#' @export
 mod_libreview_plotServer <- function(id,  glucose_df, title="Name") {
 
   moduleServer(id, function(input, output, session) {

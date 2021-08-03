@@ -35,7 +35,8 @@ ui <- fluidPage(
 
         # textOutput("auc"),
            mainPanel(
-             mod_libreviewUI("modChart")
+             mod_libreviewUI("modChart"),
+             mod_foodUI("food_compare_plot")
           # dataTableOutput("glucoseTable")
         ))
 

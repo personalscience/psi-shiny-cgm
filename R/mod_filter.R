@@ -4,7 +4,7 @@
 #' @param id input id for server
 #' @description
 #' Standalone UI renders HTML for a main panel
-#'
+#' @export
 mod_filterUI <- function(id) {
 
   ns <- NS(id)
@@ -27,6 +27,7 @@ mod_filterUI <- function(id) {
 #' @title Shiny module (server) to filter a CGM result based on user input
 #' @param id server input id
 #' @return valid libreview-based dataframe encapsulated as a reactive
+#' @export
 mod_filterServer <- function(id){
 
   moduleServer(id, function(input, output, session) {
