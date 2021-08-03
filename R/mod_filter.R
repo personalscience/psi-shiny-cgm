@@ -15,8 +15,8 @@ mod_filterUI <- function(id) {
       sliderInput(ns("start_hour"), label = "Start Time (Hour)", value = 12, min = 0, max = 23),
       sliderInput(ns("time_length"), label = "Time length (Min)", value = 120, min = 10, max = 480, step = 30),
       checkboxInput(ns("zoom_to_date"), label = "Zoom Day", value = FALSE),
-      textInput(ns("zoom_to_food"), label = "Food", value = "blueberries"),
-      actionButton(ns("submit_food"), label = "Submit Food"),
+      # textInput(ns("zoom_to_food"), label = "Food", value = "blueberries"),
+      # actionButton(ns("submit_food"), label = "Submit Food"),
 
 
     checkboxInput(ns("chk_sleep"), label = "Sleep", value = FALSE),
@@ -35,15 +35,15 @@ mod_filterServer <- function(id){
     start_date <- reactive(force_tz(input$start_date,
                                     tzone=Sys.timezone()) +
                              lubridate::hours(input$start_hour))
-    go_date <- reactive(if(input$submit_food) psiCGM:::food_times_df()
-                        else (input$start_date + lubridate::hours(input$start_time))
-    )
+    # go_date <- reactive(if(input$submit_food) psiCGM:::food_times_df()
+    #                     else (input$start_date + lubridate::hours(input$start_time))
+    # )
 
 
     glucose_df <- reactive({
 
-      if(input$submit_food){ output$show_food <- renderText(paste("You made it!", input$zoom_to_food))
-      }
+      # if(input$submit_food){ output$show_food <- renderText(paste("You made it!", input$zoom_to_food))
+      # }
 
       if(input$zoom_to_date) {
 

@@ -39,7 +39,7 @@ mod_libreview_plotServer <- function(id,  glucose_df, title="Name") {
     observeEvent(glucose_df(),
                  {     cat(file=stderr(),
                            sprintf("User %s dataframe still has %d rows\n",title(), nrow(glucose_df())))
-                 output$libreview <- renderPlot(psiCGM:::plot_glucose(glucose_df(), title()))
+                 output$libreview <- renderPlot(plot_glucose(glucose_df(), title()))
                  }
     )
 
@@ -48,7 +48,7 @@ mod_libreview_plotServer <- function(id,  glucose_df, title="Name") {
 
 
     #message(current_glucose())
-    g <- reactive(psiCGM:::plot_glucose(current_glucose(), title))
+    g <- reactive(plot_glucose(current_glucose(), title))
     return(g)
 
   })

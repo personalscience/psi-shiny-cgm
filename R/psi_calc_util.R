@@ -10,6 +10,7 @@
 #' @export
 auc_calc <- function(glucose_df, timelength = 120) {
   x <- glucose_df %>%
+    filter(!is.na(value)) %>%
     select("time","value") %>%
     dplyr::filter(.[["time"]] < first(.[["time"]]) + lubridate::minutes(timelength) ) %>%
     mutate(sec = as.numeric(.[["time"]])-as.numeric(first(.[["time"]]))) %>%

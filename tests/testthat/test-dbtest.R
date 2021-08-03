@@ -15,9 +15,9 @@ test_that("Glucose Database", {
 })
 
 test_that("Max date for user", {
-  expect_equal(as.Date(psiCGM:::max_date_for_user(user_id=1234)),
+  expect_equal(as.Date(max_date_for_user(user_id=1234)),
                as.Date("2021-06-25 06:46:00 UTC"))
-  expect_equal(psiCGM:::max_date_for_user(user_id=0000),
+  expect_equal(max_date_for_user(user_id=0000),
                NA)
 })
 

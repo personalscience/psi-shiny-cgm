@@ -8,13 +8,12 @@
 mod_foodUI <- function(id) {
   ns <- NS(id)
 
-  fluidRow(
-    plotOutput(ns("libreview")),
-    textInput(ns("food_name"), label = "Food", value = "blueberries"),
-    actionButton(ns("submit_food"), label = "Submit Food")
+  sidebarLayout(
+    sidebarPanel(    textInput(ns("food_name"), label = "Food", value = "blueberries"),
+                     actionButton(ns("submit_food"), label = "Submit Food")
+    ),
+    mainPanel(plotOutput(ns("libreview")))
   )
-
-
 }
 
 #' @title Make a glucose chart
@@ -51,4 +50,4 @@ demo_food <- function(){
 
 }
 
-demo_food()
+#demo_food()

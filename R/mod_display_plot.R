@@ -15,7 +15,7 @@ display_plotUI <- function(id) {
 mod_display_plot_server <- function(id,  glucose_df, title="Name from Server") {
 
   moduleServer(id, function(input, output, session) {
-  g <- renderPlot(psiCGM:::plot_glucose(glucose_df %>% filter(time > input$date1), title))
+  g <- renderPlot(plot_glucose(glucose_df %>% filter(time > input$date1), title))
   output$display_plot <- g
   return(g)
 
@@ -44,9 +44,9 @@ mod_filter_glucose_server <- function(id, user_id = 1234){
     #ID <- input$enter_user
     output$current_user <- renderText(paste0("Current User = ",input$enter_user))
 
-    df <- reactive(psiCGM:::glucose_df_from_db(user_id = input$enter_user))
+    df <- reactive(glucose_df_from_db(user_id = input$enter_user))
     cat(stderr(),"server expects dataframe here: ", str(df))
-    output$updated_plot <- renderPlot(psiCGM:::plot_glucose(df()))
+    output$updated_plot <- renderPlot(plot_glucose(df()))
     return(df)
   })
 

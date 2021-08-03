@@ -52,7 +52,7 @@ mod_db_selection_server <- function(id, username="Default Name") {
                  # })
 
                  g <-
-                   reactive(psiCGM:::glucose_df_from_db(user_id = input$enter_main_user) %>%
+                   reactive(glucose_df_from_db(user_id = input$enter_main_user) %>%
                    filter(time > input$date_start)
                    )
 
@@ -107,7 +107,7 @@ mod_user_selection_server2 <- function(id, username="Name") {
   moduleServer(id,
                function(input, output, session) {
                  userlist <- username
-                 main_user_table <- reactive(psiCGM:::glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
+                 main_user_table <- reactive(glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
                                                                                     user_id = 1235))
 
                  observeEvent(input$press_button, {
@@ -131,19 +131,19 @@ mod_user_selection_server2 <- function(id, username="Name") {
                  output$main_user_table <- renderDataTable({
                    if (input$pull_db != 0)
                    { message(paste("pulled from db:", paste(input$enter_main_user)))
-                     return(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user))
+                     return(glucose_df_from_db(user_id=input$enter_main_user))
                    }
                    if (input$pull_csv == 0) {
                      message("initial csv")
-                     return(psiCGM:::glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
+                     return(glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
                                                                    user_id = 1235))
                    }
                    message("default path")
-                   psiCGM:::glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
+                   glucose_df_from_libreview_csv(file=file.path("inst/extdata/Firstname2Lastname2_glucose.csv"),
                                                           user_id = 1235)
                  })
 
-                 output$db_plot <- renderPlot(psiCGM:::plot_glucose(psiCGM:::glucose_df_from_db(user_id=input$enter_main_user,
+                 output$db_plot <- renderPlot(plot_glucose(glucose_df_from_db(user_id=input$enter_main_user,
                                                                                                 from_date = "2021-06-01")))
                }
   )

@@ -28,16 +28,19 @@ plot_glucose <- function(glucose_raw, title = "Name") {
   earliest <- min(g_df[["time"]])
   latest <- max(g_df[["time"]])
 
+  lowest <- min(g_df[["value"]])
+  highest <- max(g_df[["value"]])
+
   auc = auc_calc(g_df,as.numeric(difftime(latest,earliest,units="mins")))
-  g = ggplot(data = glucose_raw, aes(x=time, y = value) )
+  g = ggplot(data = g_df, aes(x=time, y = value) )
   g + psi_theme + geom_line(color = "red")  +
     labs(title = title, x = "", y = "mg/mL",
          subtitle = paste0("Continuous glucose monitoring",
                           sprintf("(AUC = %.2f)",auc)
                           )) +
-    scaled_axis(glucose_raw) +
+    scaled_axis(g_df) +
     #scale_x_datetime(date_breaks = "1 day", date_labels = "%a %b-%d") +
-    coord_cartesian(ylim = c(60, 170))
+    coord_cartesian(ylim = c(lowest, highest))
 }
 
 #' Adjust x axis depending on time scale of glucose data frame
