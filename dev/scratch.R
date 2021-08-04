@@ -14,31 +14,19 @@ con <- DBI::dbConnect(drv = conn_args$driver,
 
 tbl(con,"notes_records") %>% filter(user_id == 1235 & !is.na(Comment)) %>% collect() %>% group_by(Comment) %>% add_count() %>% filter(n>1)
 
-from_date= as_datetime("2021-06-15",
-                       tz = Sys.timezone())
 
-foodname = "watermelon"
 
-ID <- c(1234,1008,1235)
-user_id = 1235
+taster_data_path <- config::get("tastermonial")$datadir
+datafiles <- list.files(taster_data_path)
+datafiles <- datafiles[datafiles %>% str_detect("glucose")]
 
-f <- glucose_for_food_df(user_id = 1235, foodname=foodname)
-f$user_id
-f
 
-original_levels <- levels(f$user_id) # to prevent a conversion of id_user to char later
+name_from_libreview_file(file.path(taster_data_path,datafiles[1]))
 
-ID = user_id
+lookup_id_from_name(name_from_libreview_file(file.path(taster_data_path,datafiles[1])))
 
-df <- NULL
-for(user in ID){
-  g <- f %>% filter(user_id==user)
-  for(t in g$Start){
-    new_segment_df <- glucose_df_for_users_at_time(user_id =user, startTime = lubridate::as_datetime(t,tz=Sys.timezone())) %>%
-      mutate(meal=paste0(user,"-",month(as_datetime(t)),"/",day(as_datetime(t))),
-             user_id=factor(user_id, levels = original_levels))
-    df <- bind_rows(df,make_zero_time_df(new_segment_df))
-  }
-}
-df
+
+df %>% group_by(user_id) %>%
+  summarize(max = max(value, na.rm = TRUE), min = min(value, na.rm = TRUE), n()) %>%
+  mutate(username = user_id) %>% pull(username) %>% sapply(psiCGM:::username_for_id)
 

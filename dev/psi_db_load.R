@@ -167,15 +167,44 @@ psi_fill_database_from_scratch <- function(conn_args = config::get("dataconnecti
 }
 
 
+#' @title Read all CSV files again and enter them into the database
+#' @return dataframe
+psi_fill_glucose_records_from_scratch <- function(conn_args = config::get("dataconnection"),
+                                                   drop = TRUE) {
+
+  con <- DBI::dbConnect(
+    drv = conn_args$driver,
+    user = conn_args$user,
+    host = conn_args$host,
+    port = conn_args$port,
+    dbname = conn_args$dbname,
+    password = conn_args$password
+  )
+
+  if(drop) {
+    message("removing glucose records table")
+    DBI::dbRemoveTable(con, "glucose_records")
+    message("removing notes records")
+    DBI::dbRemoveTable(con, "notes_records")
+
+
+  }
+
+all_glucose_records <- load_libreview_csv_from_directory()
+# DBI::dbWriteTable(con, name = "glucose_records", value = all_glucose_records, row.names = FALSE, overwrite = TRUE)
+
+return(all_glucose_records)
+
+}
 
 # uncomment this section to add an arbitrary new CSV file
 # be sure to set both user_ids
 # Write Andreos:
-psi_write_glucose(user_id = 1004,
-                  new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1004)
-)
-#write Bude:
-psi_write_glucose(user_id = 1008,
-                  new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1008)
-)
-
+# psi_write_glucose(user_id = 1004,
+#                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1004)
+# )
+# #write Bude:
+# psi_write_glucose(user_id = 1008,
+#                   new_table = psiCGM:::glucose_df_from_libreview_csv(rstudioapi::selectFile(), user_id = 1008)
+# )
+#
