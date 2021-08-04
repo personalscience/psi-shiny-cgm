@@ -108,8 +108,8 @@ notes_df_from_glucose_table <- function(conn_args = config::get("dataconnection"
     filter(user_id == ID) %>%
     filter(!is.na(food)) %>% collect() %>%
     transmute(Start = time,
-              End = NA,
-              Activity = "Food",
+              End = lubridate::as_datetime(NA),
+              Activity = factor("Food", levels = NOTES_COLUMNS),
               Comment = as.character(stringr::str_replace(food,"Notes=","")),
               Z = as.numeric(NA),
               user_id = user_id)

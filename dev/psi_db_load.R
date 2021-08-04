@@ -184,18 +184,60 @@ psi_fill_glucose_records_from_scratch <- function(conn_args = config::get("datac
   if(drop) {
     message("removing glucose records table")
     DBI::dbRemoveTable(con, "glucose_records")
-    message("removing notes records")
-    DBI::dbRemoveTable(con, "notes_records")
-
-
   }
 
 all_glucose_records <- load_libreview_csv_from_directory()
-# DBI::dbWriteTable(con, name = "glucose_records", value = all_glucose_records, row.names = FALSE, overwrite = TRUE)
+DBI::dbWriteTable(con, name = "glucose_records", value = all_glucose_records, row.names = FALSE, overwrite = TRUE)
 
 return(all_glucose_records)
 
 }
+
+
+#' Nuke all notes records and start over
+psi_fill_notes_records_from_scratch <- function(conn_args = config::get("dataconnection"),
+                                                drop = TRUE) {
+
+  con <- DBI::dbConnect(
+    drv = conn_args$driver,
+    user = conn_args$user,
+    host = conn_args$host,
+    port = conn_args$port,
+    dbname = conn_args$dbname,
+    password = conn_args$password
+  )
+  if(drop) {
+
+    message("removing notes records")
+    DBI::dbRemoveTable(con, "notes_records")
+  }
+
+  message("Write Martha notes")
+
+  martha_notes <- bind_rows(notes_df_from_csv(user_id=1235),
+                            notes_df_from_glucose_table(user_id=1235))
+
+  DBI::dbWriteTable(con, name = "notes_records",
+                    value = martha_notes,
+                    row.names = FALSE,
+                    overwrite = TRUE)
+
+  message("Write Richard Notes records (from glucose_records")
+  DBI::dbWriteTable(con, name = "notes_records",
+                    value = notes_df_from_glucose_table(user_id=1234),
+                    row.names = FALSE,
+                    overwrite = TRUE)
+  # psi_write_notes(user_id = 1234, new_table = notes_df_from_glucose_table(user_id = 1234), dry_run = FALSE)
+
+
+}
+
+
+# Execute from here----
+
+psi_fill_glucose_records_from_scratch()
+glucose_df_from_db(user_id = 1002)
+psi_fill_notes_records_from_scratch()
 
 # uncomment this section to add an arbitrary new CSV file
 # be sure to set both user_ids

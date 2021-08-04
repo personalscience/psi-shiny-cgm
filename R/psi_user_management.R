@@ -78,7 +78,7 @@ load_libreview_csv_from_directory <- function(path = config::get("tastermonial")
 
   df <- NULL
   for (d in datafiles) {
-    f <-  file.path(taster_data_path, d)
+    f <-  file.path(path, d)
     ID <- lookup_id_from_name(name_from_libreview_file(f))
     message(sprintf("Reading ID = %s", ID))
     g_df <- glucose_df_from_libreview_csv(file = f,
