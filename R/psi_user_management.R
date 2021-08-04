@@ -3,6 +3,7 @@
 #' @title All user records in the database
 #' @param conn_args database connection
 #' @return dataframe of all user records
+#' @export
 user_df_from_db <- function(conn_args = config::get("dataconnection")){
   con <- DBI::dbConnect(
     drv = conn_args$driver,
@@ -24,6 +25,7 @@ user_df_from_db <- function(conn_args = config::get("dataconnection")){
 #'@title Find username associated with an ID
 #'@param user_id user ID
 #'@return character string of the username for that ID
+#'@export
 username_for_id <- function(user_id) {
   ID = user_id
   user_df_from_libreview %>% filter(user_id == ID)  %>%

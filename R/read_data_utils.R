@@ -197,6 +197,7 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
 #' For example `read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))`
 #' @return A valid glucose dataframe
 #' @export
+
 glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection"),
                                          user_id=1234,
                                          startTime=now()-hours(36),
@@ -236,12 +237,14 @@ glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection")
 #' @title Read notes dataframe from database
 #' @description If notes exist for ID, return all notes in a dataframe
 #' @param user_id user id
+#' @param db_filter A function for filtering the database. Use instead of `from_date` or `user_id`
 #' @param fromDate (optional) earliest date from which to return notes
 #' @return dataframe representation of all notes for that user
 #' @export
 notes_df_from_notes_table <- function(conn_args=config::get("dataconnection"),
                     user_id=1235,
-                    fromDate="2019-11-01"){
+                    fromDate="2019-11-01",
+                    db_filter = NULL){
 
   ID = user_id
 
@@ -252,8 +255,13 @@ notes_df_from_notes_table <- function(conn_args=config::get("dataconnection"),
                         dbname = conn_args$dbname,
                         password = conn_args$password)
 
+  if(!is.null(db_filter)){
+    notes_df <- tbl(con, "notes_records")  %>%
+      db_filter() %>% collect()
+  } else {
   notes_df <- tbl(con, "notes_records") %>%   filter(user_id %in% ID ) %>%
     collect()
+  }
 
   DBI::dbDisconnect(con)
   return(notes_df)
@@ -290,7 +298,7 @@ glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
 
   ID <-  user_id
 
-  nf <- notes_df_from_notes_table(conn_args, user_id = ID) %>%
+  nf <- notes_df_from_notes_table(conn_args, user_id = ID, db_filter = function(x) {x}) %>%
     filter(stringr::str_detect(stringr::str_to_lower(Comment), stringr::str_to_lower(foodname)))
 
   return(nf)

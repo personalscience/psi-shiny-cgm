@@ -32,7 +32,7 @@ mod_foodServer <- function(id,  glucose_df, title = "Name") {
     #foodname <- input$food_name
     output$libreview <- renderPlot({
       input$submit_food
-      plot_food_compare(food_times = food_times_df(foodname = isolate(input$food_name)),
+      plot_food_compare(food_times = food_times_df(user_id = user_df_from_libreview$user_id , foodname = isolate(input$food_name)),
                         foodname = isolate(input$food_name))
     })
     })

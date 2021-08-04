@@ -226,7 +226,7 @@ psi_fill_notes_records_from_scratch <- function(conn_args = config::get("datacon
   DBI::dbWriteTable(con, name = "notes_records",
                     value = notes_df_from_glucose_table(user_id=1234),
                     row.names = FALSE,
-                    overwrite = TRUE)
+                    append = TRUE)
   # psi_write_notes(user_id = 1234, new_table = notes_df_from_glucose_table(user_id = 1234), dry_run = FALSE)
 
 
@@ -236,7 +236,7 @@ psi_fill_notes_records_from_scratch <- function(conn_args = config::get("datacon
 # Execute from here----
 
 psi_fill_glucose_records_from_scratch()
-glucose_df_from_db(user_id = 1002)
+
 psi_fill_notes_records_from_scratch()
 
 # uncomment this section to add an arbitrary new CSV file
