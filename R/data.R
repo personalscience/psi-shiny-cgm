@@ -18,3 +18,12 @@
 #' @source \url{http://libreview.com/}
 #'
 "sample_libreview_df"
+
+#' Table of all registered users
+#'
+#' from a CSV file generated at the Libreview Practice Portal
+#' @docType data
+#' @usage data(user_df_from_libreview)
+#' @format a data frame with 6 rows
+#' @export
+"user_df_from_libreview"

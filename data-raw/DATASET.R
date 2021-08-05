@@ -33,7 +33,7 @@ extra_user_df <- read_csv(file = system.file("extdata",
 #' @title Users known to Libreview Practice Portal
 #' @description
 #' A dataframe of all users and their ids, taken from the Libreview practice portal
-#'
+#' @export
 user_df_from_libreview <-
   user_df_from_csv() %>% mutate(user_id = row_number() + 1000) %>%
   dplyr::anti_join(extra_user_df,

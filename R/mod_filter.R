@@ -10,7 +10,9 @@ mod_filterUI <- function(id) {
   ns <- NS(id)
 
     tagList(
-      numericInput(ns("user_id"), label = "User ID", value = 1235),
+      selectInput(ns("user_id"), label = "User Name",
+                  choices = with(user_df_from_libreview, paste(first_name,last_name)),
+                  selected = "Martha Sprague"),
       dateInput(ns("start_date"), label = "Start Date", value = as_datetime("2021-06-17", tz = Sys.timezone() )),
       sliderInput(ns("start_hour"), label = "Start Time (Hour)", value = 12, min = 0, max = 23),
       sliderInput(ns("time_length"), label = "Time length (Min)", value = 120, min = 10, max = 480, step = 30),
@@ -31,7 +33,9 @@ mod_filterUI <- function(id) {
 mod_filterServer <- function(id){
 
   moduleServer(id, function(input, output, session) {
-    ID<- reactive(input$user_id)
+    ID<- reactive( {message(paste("Selected User", isolate(input$user_id)))
+      lookup_id_from_name(input$user_id[1])}
+      )
     start_date <- reactive(force_tz(input$start_date,
                                     tzone=Sys.timezone()) +
                              lubridate::hours(input$start_hour))
