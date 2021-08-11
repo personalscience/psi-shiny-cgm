@@ -362,7 +362,11 @@ food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon")
     g <- f %>% filter(user_id==user)
     for(t in g$Start){
       new_segment_df <- glucose_df_for_users_at_time(user_id =user, startTime = lubridate::as_datetime(t,tz=Sys.timezone())) %>%
-        mutate(meal=paste0(user,"-",month(as_datetime(t)),"/",day(as_datetime(t))),
+        mutate(meal=sprintf("%s-%i/%i",
+                            str_split(username_for_id(user),
+                                      " ")[[1]][2],
+                                      month(as_datetime(t)),
+                                      day(as_datetime(t))),
                user_id = factor(user_id)) #user_id=factor(user_id, levels = original_levels))
 
       df <- bind_rows(df,make_zero_time_df(new_segment_df))

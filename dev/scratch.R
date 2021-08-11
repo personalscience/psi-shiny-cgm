@@ -14,32 +14,31 @@ con <- DBI::dbConnect(drv = conn_args$driver,
 
 
 
-user_df_from_libreview$user_id
-
-selectInput("user_id", label = "User Name",
-            choices = with(user_df_from_libreview, paste(first_name,last_name)),
-            selected = "Richard Sprague")
+rs_file <- file.path("/Users/sprague/OneDrive/Ensembio/Personal Science/Partners/Tastermonial/data/RichardSprague_glucose_8-10-2021.csv")
 
 
-with(user_df_from_libreview, paste(first_name,last_name))
+rs_g <- glucose_df_from_libreview_csv(rs_file)
+
+pop_tart_start <- rs_g %>% filter(stringr::str_detect(food, "Pop-Tart")) %>% pull(time)
+
+pt <- rs_g %>% filter(time >= pop_tart_start) %>%
+  filter(time <= (pop_tart_start + minutes(160)))
+
+auc_calc(pt)
+
+pt1 <- pt %>% transmute(t = as.numeric(time - pop_tart_start)/60,
+                        value = value,
+                        meal="Pop-Tarts™",
+                        user_id = factor(1235))
+pt1
+plot_food_compare(food_times = filter(pt1, !is.na(value)), foodname = "Pop-Tarts™") +
+  labs(title = "Glucose Levels", subtitle = sprintf("AUC=%.2f",auc_calc(pt)))
 
 
-my_filter <- function(x) {
-  return(x)
-}
+glucose_df_from_db() %>%
+  filter(!is.na(food)) %>%
+  transmute(food = stringr::str_replace(food,"Notes=","")) %>%
+  group_by(food) %>% add_count() %>%
+  filter(n < 10 & n > 3)
 
-testers <- c(1234,1235,1001)
-glucose_df_for_users_at_time(user_id = user_df_from_libreview$user_id, startTime = (now() - weeks(7)))
-
-food_times_df(user_id = user_df_from_libreview$user_id , foodname = "Real food") %>% arrange(user_id)
-
-tbl(con, "glucose_records") %>% collect()  %>% group_by(user_id) %>% summarize(n())
-
-tbl(con, "notes_records") %>% collect()  %>% group_by(user_id) %>% summarize(n()) #add_count() # %>%
-
-tbl(con, "notes_records") %>%  filter(Activity == "Food") %>% collect()  %>% filter(stringr::str_detect(Comment, "Real")) # filter(stringr::str_detect(stringr::str_to_lower(Comment) ==  stringr::str_to_lower("Real Food")))
-
-tbl(con, "notes_records") %>% filter(Activity == "Food") %>% group_by(Comment, user_id) %>%
-  summarize(n = n()) %>% filter(n>1) %>%
-  group_by(user_id) %>% summarize(n())
-
+plot_food_compare(food_times = food_times_df(user_id = 1234, foodname = "beer"), foodname = "beer")

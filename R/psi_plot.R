@@ -63,7 +63,7 @@ scaled_axis <- function(glucose_raw) {
 plot_food_compare <- function(food_times = food_times_df(foodname = "watermelon"),
                               foodname = "watermelon") {
 
-  food_times %>% ggplot(aes(t,value, color = meal)) + geom_line() +
+  food_times %>% ggplot(aes(t,value, color = meal)) + geom_line(size = 2) +
     psi_theme +
     labs(title = paste0("Glucose Response to ",stringr::str_to_title(foodname)),
          subtitle = "",
