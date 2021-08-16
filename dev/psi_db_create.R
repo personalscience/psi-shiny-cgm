@@ -4,13 +4,15 @@
 # and it will automatically create the database 'qsdev' and a table 'glucose_records'
 # Note: nothing bad should happen if you source this on an existing database (i.e. nothing will happen)
 
+
 library(tidyverse)
 
 GLUCOSE_DATA_FRAME <-
   tibble(time=lubridate::now(), scan = 0.0, hist = 0.0, strip = 0.0, value = 0.0, food = "", user_id = 0.0)
 
 # set the active configuration globally via Renviron.site or Rprofile.site
-Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
+Sys.setenv(R_CONFIG_ACTIVE = "tastercloud")
+#Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
 # Sys.setenv(R_CONFIG_ACTIVE = "localtest") # a database useful for testing
 # Sys.setenv(R_CONFIG_ACTIVE = "cloud") # save to cloud
 # Sys.setenv(R_CONFIG_ACTIVE = "default") # save to sqlite

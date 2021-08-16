@@ -14,7 +14,7 @@ library(shiny)
 library(tidyverse)
 library(lubridate)
 
-Sys.setenv(R_CONFIG_ACTIVE = "local")
+#Sys.setenv(R_CONFIG_ACTIVE = "local")
 
 
 #' Define server logic required to display CGM information
@@ -23,6 +23,7 @@ Sys.setenv(R_CONFIG_ACTIVE = "local")
 server <- function(input, output) {
 
     datafilepath <- psiCGM:::csvFilePathServer("datafile")
+    output$currentDB <- renderText(sprintf("DB=%s", attr(config::get(),"config")))
 
     output$show_file <- renderText(datafilepath()$name)
 

@@ -13,7 +13,7 @@ library(lubridate)
 
 
 # set the active configuration globally via Renviron.site or Rprofile.site
-Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
+#Sys.setenv(R_CONFIG_ACTIVE = "local")  # save to local postgres
 # Sys.setenv(R_CONFIG_ACTIVE = "cloud") # save to cloud
 # Sys.setenv(R_CONFIG_ACTIVE = "default") # save to sqlite
 # Sys.setenv(R_CONFIG_ACTIVE = "cloud")
