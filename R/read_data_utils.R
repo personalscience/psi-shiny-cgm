@@ -29,10 +29,10 @@ NOTES_COLUMNS <- c("Sleep", "Event", "Food","Exercise")
 #' @export
 #' @import readr magrittr tibble
 #' @import lubridate
-glucose_df_from_libreview_csv <- function(file=file.path(Sys.getenv("ONEDRIVE"),
-                                              "General","Health",
-                                              "RichardSprague_glucose.csv"),
-                               user_id = 1234) {
+glucose_df_from_libreview_csv <- function(file=system.file("extdata",
+                                                           package = "psiCGM",
+                                                           "Firstname2Lastname2_glucose.csv"),
+                                          user_id = 1234) {
 
 
   firstline <- readLines(con = file, 1) %>%

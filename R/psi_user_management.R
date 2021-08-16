@@ -17,7 +17,7 @@ user_df_from_db <- function(conn_args = config::get("dataconnection")){
   users_df <- table_df_from_db(conn_args = conn_args,
                                table_name = "user_list" )
 
-  DBI::dbDisconnect()
+  DBI::dbDisconnect(con)
   return(users_df)
 
 }

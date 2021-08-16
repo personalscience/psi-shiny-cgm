@@ -222,6 +222,22 @@ psi_fill_notes_records_from_scratch <- function(conn_args = config::get("datacon
                     row.names = FALSE,
                     overwrite = TRUE)
 
+  message("Write Ayumi notes")
+  ayumi_notes <-  notes_df_from_glucose_table(user_id=1002)
+
+  DBI::dbWriteTable(con, name = "notes_records",
+                    value = ayumi_notes,
+                    row.names = FALSE,
+                    append = TRUE)
+
+  message("Write Bude notes")
+  bude_notes <-  notes_df_from_glucose_table(user_id=1010)
+
+  DBI::dbWriteTable(con, name = "notes_records",
+                    value = bude_notes,
+                    row.names = FALSE,
+                    append = TRUE)
+
   message("Write Richard Notes records (from glucose_records")
   DBI::dbWriteTable(con, name = "notes_records",
                     value = notes_df_from_glucose_table(user_id=1234),
