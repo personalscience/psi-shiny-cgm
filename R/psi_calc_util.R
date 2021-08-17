@@ -6,7 +6,7 @@
 #' @description Returns AUC for the first timelength minutes after the start of the glucose_df
 #' @param glucose_df dataframe of glucose values
 #' @param timelength number of minutes to look ahead for the AUC calculation
-#' @import DescTools
+#' @import DescTools magrittr dplyr lubridate
 #' @export
 auc_calc <- function(glucose_df, timelength = 120) {
   x <- glucose_df %>%
