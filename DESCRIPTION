@@ -1,6 +1,6 @@
 Package: psiCGM
 Title: Personal Science CGM Analysis Web App
-Version: 0.0.0.9040
+Version: 0.0.0.9041
 Authors@R: 
     person(given = "Richard",
            family = "Sprague",
