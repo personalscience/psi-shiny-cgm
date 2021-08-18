@@ -10,9 +10,9 @@
 
 
 
-library(shiny)
-library(tidyverse)
-library(lubridate)
+# library(shiny)
+# library(tidyverse)
+# library(lubridate)
 
 #Sys.setenv(R_CONFIG_ACTIVE = "local")
 
@@ -23,7 +23,9 @@ library(lubridate)
 server <- function(input, output) {
 
     datafilepath <- psiCGM:::csvFilePathServer("datafile")
-    output$currentDB <- renderText(sprintf("DB=%s", attr(config::get(),"config")))
+    output$currentDB <- renderText(sprintf("DB=%s. psiCGM version = %s",
+                                           attr(config::get(),"config"),
+                                           packageVersion("psiCGM")))
 
     output$show_file <- renderText(datafilepath()$name)
 

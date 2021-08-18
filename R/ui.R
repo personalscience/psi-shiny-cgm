@@ -21,7 +21,7 @@ ui <- fluidPage(
     # Application title
     titlePanel("Personal Science Experiments", windowTitle = "Personal Science, Inc."),
     tags$a(href="https://personalscience.com", "More details"),
-    h3(textOutput("currentDB")),
+    textOutput("currentDB"),
 
     # Application title
     h2("Your CGM Data"),
