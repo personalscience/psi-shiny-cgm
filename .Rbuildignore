@@ -1,6 +1,0 @@
-^renv$
-^renv\.lock$
-^LICENSE\.md$
-^psiCGM\.Rproj$
-^\.Rproj\.user$
-^data-raw$
