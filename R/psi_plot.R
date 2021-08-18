@@ -1,13 +1,14 @@
 # Plot glucose
 
-library(showtext)
-font_add_google("Montserrat")
-showtext_auto()
+# library(showtext)
+# font_add_google("Montserrat")
+# showtext_auto()
 
 #' Stylized theme for consistent plot style
 #' @import ggplot2
 #' @export
-psi_theme <-   theme(text = element_text(family = "Montserrat", face = "bold", size = 15),
+psi_theme <-   theme(text = element_text(# family = "Montserrat",
+                                         face = "bold", size = 15),
                      axis.text.x = element_text(size = 15, angle = 90, hjust = 1),
                      legend.title = element_blank())
 
