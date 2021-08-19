@@ -22,7 +22,7 @@
 #' @import magrittr dplyr
 server <- function(input, output) {
 
-    datafilepath <- psiCGM:::csvFilePathServer("datafile")
+    #datafilepath <- psiCGM:::csvFilePathServer("datafile")
     output$currentDB <- renderText(sprintf("DB=%s. psiCGM version = %s",
                                            attr(config::get(),"config"),
                                            packageVersion("psiCGM")))
@@ -30,7 +30,7 @@ server <- function(input, output) {
     output$show_file <- renderText(datafilepath()$name)
 
     active_glucose_record <- mod_filterServer("psi_filter_plot")
-    username<-reactive(psiCGM:::username_for_id(active_glucose_record()[["user_id"]][1]))
+    username<-reactive(username_for_id(active_glucose_record()[["user_id"]][1]))
 
     observe(
         cat(stderr(), sprintf("username=%s \n",username()))
