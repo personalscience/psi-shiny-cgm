@@ -25,4 +25,5 @@
 #' @docType data
 #' @usage data(user_df_from_libreview)
 #' @format a data frame with 6 rows
+#' @export
 "user_df_from_libreview"
