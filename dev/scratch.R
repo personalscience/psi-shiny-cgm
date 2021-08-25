@@ -12,8 +12,27 @@ con <- DBI::dbConnect(drv = conn_args$driver,
                       password = conn_args$password)
 
 
-Sys.setenv(R_CONFIG_ACTIVE = "tastercloud")
-conn_args=config::get("dataconnection")
+
+#Sys.setenv(R_CONFIG_ACTIVE = "tastercloud")
+
+
+library(DescTools)
+
+
+
+food_times_df(user_id=1234,foodname="blueberries") %>% filter(!is.na(value)) %>% distinct() %>%  # %>%
+  group_by(meal) %>%
+  mutate(auc = DescTools::AUC(t,value-first(value)))
+  #mutate(auc = sum((lag(value)-value)*(t-lag(t)), na.rm = TRUE))
+
+m %>% group_by(meal) %>% summarize(auc = DescTools::AUC(t,value-first(value)))
+
+  summarize(auc = DescTools::AUC(t,value-first(value)))
+
+m <- food_times_df(user_id=1234,foodname="blueberries") %>% filter(!is.na(value)) %>% distinct()
+m %>% group_by(meal) %>%  summarize(auc = sum((lag(value)-value)*(t-lag(t)), na.rm = TRUE))
+
+######
 
 tbl(con, "glucose_records") %>% pull(user_id) %>% unique()# %>% filter(user_id == 1234) %>% collect() # %filter(time == max(time))
 #

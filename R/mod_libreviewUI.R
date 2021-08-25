@@ -34,7 +34,7 @@ mod_libreview_plotServer <- function(id,  glucose_df, title="Name") {
     #       sprintf("found your dataframe with %d rows\n",nrow(glucose_df())))
     # })
 
-    output$auc_value <- renderText(sprintf("%.2f",psiCGM::auc_calc(glucose_df())))
+    output$auc_value <- renderText(sprintf("%.2f",auc_calc(glucose_df())))
 
     observeEvent(glucose_df(),
                  {     cat(file=stderr(),
