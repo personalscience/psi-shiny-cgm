@@ -53,7 +53,7 @@ mod_filter_glucose_server <- function(id, user_id = 1234){
 }
 
 display_demo <- function() {
-  glucose_df <- psiCGM:::sample_libreview_df
+  glucose_df <- sample_libreview_df
   ui <- fluidPage(
     includeCSS("R/www/psi_shiny.css"),
     titlePanel("Overall Title"),

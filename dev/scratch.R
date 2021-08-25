@@ -14,11 +14,22 @@ con <- DBI::dbConnect(drv = conn_args$driver,
 
 Sys.setenv(R_CONFIG_ACTIVE = "tastercloud")
 conn_args=config::get("dataconnection")
+
+tbl(con, "glucose_records") %>% pull(user_id) %>% unique()# %>% filter(user_id == 1234) %>% collect() # %filter(time == max(time))
 #
-# rs_file <- file.path("/Users/sprague/OneDrive/Ensembio/Personal Science/Partners/Tastermonial/data/RichardSprague_glucose_8-10-2021.csv")
+rs_file <- file.path("/Users/sprague/OneDrive/Ensembio/Personal Science/Partners/Tastermonial/data/RichardSprague_glucose_8-10-2021.csv")
+rs_file <- file.path("/Users/sprague/OneDrive/General/Health/RichardSprague_glucose.csv")#
 #
-#
-# rs_g <- glucose_df_from_libreview_csv(rs_file)
+rs_g <- glucose_df_from_libreview_csv(rs_file, user_id = 1234)
+notes_df_from_glucose_table(user_id=1234)
+
+DBI::dbWriteTable(con, name = "glucose_records",
+                  value = rs_g, row.names = FALSE, append = TRUE)
+
+DBI::dbWriteTable(con, name = "notes_records",
+                  value = notes_df_from_glucose_table(user_id=1234), row.names = FALSE, append = TRUE)
+
+notes_df_from_glucose_table(user_id=1234)
 #
 # pop_tart_start <- rs_g %>% filter(stringr::str_detect(food, "Pop-Tart")) %>% pull(time)
 #

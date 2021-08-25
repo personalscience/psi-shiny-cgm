@@ -147,6 +147,7 @@ table_df_from_db <- function(conn_args = config::get("dataconnection"),
 
 
 #' @title Read from database a dataframe of glucose values for user_id ID
+#' @param conn_args valid database connection
 #' @param from_date a string representing the date from which you want to read the glucose values
 #' @param user_id ID for a specific user in the database.
 #' @param db_filter A function for filtering the database. Use instead of `from_date` or `user_id`
@@ -192,9 +193,12 @@ glucose_df_from_db <- function(conn_args=config::get("dataconnection"),
 #' @title Glucose values for ID after startDate
 #' @description
 #' For example `read_glucose_for_user_at_time(ID=22,startTime = as_datetime("2020-02-16 00:50:00", tz=Sys.timezone()))`
+#' @param conn_args valid database connection
+#' @param user_id user ID
+#' @param startTime datetime object for start time
+#' @param timelength minutes of glucose values to return
 #' @return A valid glucose dataframe
 #' @export
-
 glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection"),
                                          user_id=1234,
                                          startTime=now()-hours(36),
@@ -233,6 +237,7 @@ glucose_df_for_users_at_time <- function(conn_args=config::get("dataconnection")
 
 #' @title Read notes dataframe from database
 #' @description If notes exist for ID, return all notes in a dataframe
+#' @param conn_args valid database connection
 #' @param user_id user id
 #' @param db_filter A function for filtering the database. Use instead of `from_date` or `user_id`
 #' @param fromDate (optional) earliest date from which to return notes
@@ -295,7 +300,9 @@ glucose_for_food_df <- function(conn_args=config::get("dataconnection"),
 
   ID <-  user_id
 
-  nf <- notes_df_from_notes_table(conn_args, user_id = ID, db_filter = function(x) {x}) %>%
+  nf <- notes_df_from_notes_table(conn_args,
+                                  user_id = ID,
+                                  db_filter = function(x) {x}) %>%
     filter(stringr::str_detect(stringr::str_to_lower(Comment), stringr::str_to_lower(foodname)))
 
   return(nf)
@@ -379,7 +386,9 @@ food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon")
 #' Search the default database for the most recent (aka latest) timestamp
 #' Note: doesn't currently work for tables other than `glucose_records`
 #' @title Most recent date in the database for a given user
+#' @param conn_args valid database connection
 #' @param user_id user ID
+#' @param fromDate data object representing the first date to return
 #' @param table_name the table in which to find the latest record (currently fixed at `glucose-records`)
 #' @return a date object representing the most recent record in the database for this user. NA if there are no records.
 #' @import DBI

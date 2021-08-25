@@ -60,7 +60,7 @@ mod_libreview_plotServer <- function(id,  glucose_df, title="Name") {
 cgm_demo <- function() {
 
 
-  glucose_df <- psiCGM::sample_libreview_df
+  glucose_df <- sample_libreview_df
   ui <- fluidPage(mod_libreviewUI("x"))
   server <- function(input, output, session) {
     mod_libreview_plotServer("x", reactive(glucose_df), reactiveVal("Username"))

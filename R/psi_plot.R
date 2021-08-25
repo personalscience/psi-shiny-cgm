@@ -46,6 +46,7 @@ plot_glucose <- function(glucose_raw, title = "Name") {
 }
 
 #' Adjust x axis depending on time scale of glucose data frame
+#' @param glucose_raw dataframe of a valid Libreview glucose table
 #' @return scale_x_datetime object, to be added to glucose plot
 scaled_axis <- function(glucose_raw) {
   time_length <- max(glucose_raw$time) - min(glucose_raw$time)
@@ -80,6 +81,7 @@ plot_food_compare <- function(food_times = food_times_df(foodname = "watermelon"
 #' When following a `plot_glucose()` call to generate a ggplot object, this returns a
 #' ggplot object to draw the correct information from the notes dataframe
 #' @import ggplot2
+#' @param g a ggplot graphic object
 #' @param notes_df a valid notes dataframe
 #' @return ggplot object
 plot_notes_overlay <- function(g, notes_df) {

@@ -52,6 +52,7 @@ name_from_libreview_file <- function(filepath) {
 #' @title user_id of a valid name string
 #' @description
 #' Assuming the name string is already in the user database, returns the user_id
+#' @param name a string representation of the name you want to look up
 #' @return user_id user ID from `user_df_from_libreview`
 #' @export
 lookup_id_from_name <- function(name) {
