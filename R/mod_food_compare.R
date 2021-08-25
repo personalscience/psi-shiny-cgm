@@ -12,7 +12,8 @@ mod_foodUI <- function(id) {
     sidebarPanel(    textInput(ns("food_name"), label = "Food", value = "blueberries"),
                      actionButton(ns("submit_food"), label = "Submit Food")
     ),
-    mainPanel(plotOutput(ns("libreview")))
+    mainPanel(plotOutput(ns("libreview")),
+             tableOutput(ns("auc_table")))
   )
 }
 
@@ -34,6 +35,18 @@ mod_foodServer <- function(id,  glucose_df, title = "Name") {
       input$submit_food
       plot_food_compare(food_times = food_times_df(user_id = user_df_from_libreview$user_id , foodname = isolate(input$food_name)),
                         foodname = isolate(input$food_name))
+    })
+    output$auc_table <- renderTable({
+      input$submit_food
+      food_times_df(user_id = user_df_from_libreview$user_id , foodname = isolate(input$food_name)) %>% filter(!is.na(value)) %>% distinct() %>%  # %>%
+        group_by(meal) %>%
+        summarize(auc = DescTools::AUC(t,value-first(value)),
+                  min = min(value),
+                  max = max(value),
+                  rise = last(value) - first(value)) %>%
+        #summarize(auc = sum((lag(value)-value)*(t-lag(t)), na.rm = TRUE)) %>%
+        arrange(auc)
+
     })
     })
 
