@@ -57,9 +57,11 @@ name_from_libreview_file <- function(filepath) {
 #' @export
 lookup_id_from_name <- function(name) {
   name_split <- str_split(name, pattern = " ", simplify = TRUE)
-  first <- name_split[1]
-  last <- name_split[2]
-  ID <- user_df_from_libreview %>% filter(first_name == first & last_name == last) %>% pull(user_id)
+  first <- first(name_split)
+  last <- paste(name_split[-1], collapse=" ")
+  ID <- user_df_from_libreview %>% filter(first_name == first &
+                                            stringr::str_detect(last_name, last)) %>%
+    pull(user_id)
   return(if(length(ID)>0) ID else NULL)
   # return(paste("your name",first_name,last_name))
 
