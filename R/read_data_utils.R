@@ -357,7 +357,7 @@ food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon")
   f <- glucose_for_food_df(user_id = user_id, foodname=foodname)
 
 
- # original_levels <- factor(f$user_id) # to prevent a conversion of id_user to char later
+  # original_levels <- factor(f$user_id) # to prevent a conversion of id_user to char later
 
   ID = user_id
 
@@ -370,11 +370,22 @@ food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon")
                             substring(username_for_id(user),1,1),
                             str_split(username_for_id(user),
                                       " ")[[1]][2],
-                                      month(as_datetime(t)),
-                                      day(as_datetime(t))),
+                            month(as_datetime(t)),
+                            day(as_datetime(t))),
+               foodname = sprintf("%s-%i/%i",
+                                  foodname,
+                                  month(as_datetime(t)),
+                                  day(as_datetime(t))),
                user_id = factor(user_id)) #user_id=factor(user_id, levels = original_levels))
 
-      df <- bind_rows(df,make_zero_time_df(new_segment_df))
+      df <- bind_rows(df, transmute(new_segment_df,
+                                    t=zero_time(time),
+                                    value=value,
+                                    meal=meal,
+                                    foodname = foodname,
+                                    user_id=user_id)
+                      #make_zero_time_df(new_segment_df)
+      )
     }
   }
   return(df)
