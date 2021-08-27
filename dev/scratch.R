@@ -3,14 +3,14 @@ library(psiCGM)
 library(tidyverse)
 library(lubridate)
 
-conn_args=config::get("dataconnection")
-con <- DBI::dbConnect(drv = conn_args$driver,
-                      user = conn_args$user,
-                      host = conn_args$host,
-                      port = conn_args$port,
-                      dbname = conn_args$dbname,
-                      password = conn_args$password)
-
+# conn_args=config::get("dataconnection")
+# con <- DBI::dbConnect(drv = conn_args$driver,
+#                       user = conn_args$user,
+#                       host = conn_args$host,
+#                       port = conn_args$port,
+#                       dbname = conn_args$dbname,
+#                       password = conn_args$password)
+#
 
 
 #Sys.setenv(R_CONFIG_ACTIVE = "tastercloud")
@@ -48,10 +48,20 @@ food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon")
                                       " ")[[1]][2],
                             month(as_datetime(t)),
                             day(as_datetime(t))),
-               foodname = foodname,
+               foodname = sprintf("%s-%i/%i",
+                                  foodname,
+                                  month(as_datetime(t)),
+                                  day(as_datetime(t))),
                user_id = factor(user_id)) #user_id=factor(user_id, levels = original_levels))
 
-      df <- bind_rows(df,make_zero_time_df(new_segment_df))
+      df <- bind_rows(df, transmute(new_segment_df,
+                                    t=zero_time(time),
+                                    value=value,
+                                    meal=meal,
+                                    foodname = foodname,
+                                    user_id=user_id)
+                      #make_zero_time_df(new_segment_df)
+                      )
     }
   }
   return(df)
@@ -61,7 +71,7 @@ food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon")
 bind_rows(
   food_times_df(lookup_id_from_name("Ayumi"),foodname = "kind,"),
   food_times_df(lookup_id_from_name("Ayumi"),foodname = "Real food")
-) %>% filter(!is.na(value)) %>% ggplot(aes(t,value, color = meal)) + geom_line(size = 2)
+) %>% filter(!is.na(value)) %>% ggplot(aes(t,value, color = foodname)) + geom_line(size = 2)
 
 
 

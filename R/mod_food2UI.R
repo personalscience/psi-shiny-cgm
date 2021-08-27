@@ -1,8 +1,8 @@
 # Shiny Module and UI to compare foods for a single user
 
-#' @title UI for food-related plots
+#' @title UI for comparing two foods for a single user
 #' @description
-#' Plot a food object
+#' Plot glucose responses for two foods for a single user.
 #' @param id Shiny id
 #' @export
 mod_food2UI <- function(id) {
@@ -22,12 +22,12 @@ mod_food2UI <- function(id) {
       checkboxInput(ns("normalize"), label = "Normalize")
     ),
     mainPanel(plotOutput(ns("libreview")),
-              tableOutput(ns("auc_table")))
+              dataTableOutput(ns("auc_table")))
   )
 }
 
 
-#' @title Make a glucose chart
+#' @title Shiny server to display two food comparisons for one user.
 #' @description
 #' Given a (reactive) libreview dataframe, this Shiny module will
 #' generate a valid ggplot object and display it in an accompanying UI
@@ -43,19 +43,28 @@ mod_food2Server <- function(id,  glucose_df, title = "Name") {
     ID<- reactive( {message(paste("Selected User", isolate(input$user_id)))
       lookup_id_from_name(input$user_id[1])}
     )
-
+    observe(
+      cat(stderr(), sprintf("username=%s \n",ID()))
+    )
     output$libreview <- renderPlot({
-      input$submit_food
-      plot_food_compare(food_times = food_times_df(user_id = user_df_from_libreview$user_id,
-                                                   foodname = isolate(input$food_name)),
-                        foodname = isolate(input$food_name))
+      input$submit_foods
+      bind_rows(food_times_df(ID(),
+                              foodname=isolate(input$food_name1)),
+                food_times_df(ID(),
+                              foodname=isolate(input$food_name2))) %>%
+        filter(!is.na(value)) %>% ggplot(aes(t,value, color = foodname)) + geom_line(size = 2)
+
     })
-    output$auc_table <- renderTable({
-      input$submit_food
-      food_times_df(user_id = user_df_from_libreview$user_id,
-                    foodname = isolate(input$food_name)) %>% filter(!is.na(value)) %>% distinct() %>%  # %>%
-        group_by(meal) %>%
-        summarize(auc = DescTools::AUC(t,value-first(value)),
+    output$auc_table <- renderDataTable({
+      input$submit_foods
+      bind_rows(food_times_df(ID(),
+                              foodname=isolate(input$food_name1)),
+                food_times_df(ID(),
+                              foodname=isolate(input$food_name2))) %>%
+        filter(!is.na(value)) %>% distinct() %>%  # %>%
+        group_by(meal, foodname) %>%
+        summarize(
+                  auc = DescTools::AUC(t,value-first(value)),
                   min = min(value),
                   max = max(value),
                   rise = last(value) - first(value)) %>%
@@ -70,10 +79,12 @@ mod_food2Server <- function(id,  glucose_df, title = "Name") {
 demo_food2 <- function(){
 
   glucose_df <- glucose_df_from_db(user_id = 1235)
-  ui <- fluidPage(mod_foodUI("x"))
+  ui <- fluidPage(mod_food2UI("x"))
   server <- function(input, output, session) {
-    mod_foodServer("x", reactive(glucose_df), reactiveVal("Username"))
+    mod_food2Server("x", reactive(glucose_df), reactiveVal("Username"))
   }
   shinyApp(ui, server)
 
 }
+
+#demo_food2()
