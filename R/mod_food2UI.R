@@ -1,24 +1,26 @@
-# Shiny module to compare foods
+# Shiny Module and UI to compare foods for a single user
 
 #' @title UI for food-related plots
 #' @description
 #' Plot a food object
 #' @param id Shiny id
 #' @export
-mod_foodUI <- function(id) {
+mod_food2UI <- function(id) {
   ns <- NS(id)
 
   sidebarLayout(
-    sidebarPanel(    textInput(ns("food_name"), label = "Food", value = "blueberries"),
-                     actionButton(ns("submit_food"), label = "Submit Food"),
+    sidebarPanel(    textInput(ns("food_name1"), label = "Food 1", value = "Real Food Bar"),
+                     textInput(ns("food_name2"), label = "Food 2", value = "Kind, nuts & Spices"),
+                     actionButton(ns("submit_foods"), label = "Submit Foods"),
                      checkboxInput(ns("normalize"), label = "Normalize")
     ),
     mainPanel(plotOutput(ns("libreview")),
-             tableOutput(ns("auc_table")))
+              tableOutput(ns("auc_table")))
   )
 }
 
-#' @title Plot glucose reaction for all foods that match an input text.
+
+#' @title Make a glucose chart
 #' @description
 #' Given a (reactive) libreview dataframe, this Shiny module will
 #' generate a valid ggplot object and display it in an accompanying UI
@@ -27,7 +29,7 @@ mod_foodUI <- function(id) {
 #' @param title a title for the plot
 #' @return ggplot object representing a glucose chart
 #' @export
-mod_foodServer <- function(id,  glucose_df, title = "Name") {
+mod_food2Server <- function(id,  glucose_df, title = "Name") {
 
   moduleServer(id, function(input, output, session) {
 
@@ -51,11 +53,11 @@ mod_foodServer <- function(id,  glucose_df, title = "Name") {
         arrange(auc)
 
     })
-    })
+  })
 
 }
 
-demo_food <- function(){
+demo_food2 <- function(){
 
   glucose_df <- glucose_df_from_db(user_id = 1235)
   ui <- fluidPage(mod_foodUI("x"))
@@ -65,5 +67,3 @@ demo_food <- function(){
   shinyApp(ui, server)
 
 }
-
-#demo_food()

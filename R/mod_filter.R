@@ -12,7 +12,7 @@ mod_filterUI <- function(id) {
     tagList(
       selectInput(ns("user_id"), label = "User Name",
                   choices = with(user_df_from_libreview, paste(first_name,last_name)),
-                  selected = "Martha Sprague"),
+                  selected = "Ayumi Blystone"),
       dateInput(ns("start_date"), label = "Start Date", value = as_datetime("2021-06-17", tz = Sys.timezone() )),
       sliderInput(ns("start_hour"), label = "Start Time (Hour)", value = 12, min = 0, max = 23),
       sliderInput(ns("time_length"), label = "Time length (Min)", value = 120, min = 10, max = 480, step = 30),

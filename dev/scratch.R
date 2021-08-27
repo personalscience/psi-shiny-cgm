@@ -16,60 +16,52 @@ con <- DBI::dbConnect(drv = conn_args$driver,
 #Sys.setenv(R_CONFIG_ACTIVE = "tastercloud")
 
 
-library(DescTools)
+
+
+#' @title Glucose values after eating a specific food
+#' @description
+#' return a dataframe of the Glucose values for a `timeLength`
+#' following `foodname` appearing in `notes_records`
+#' @param user_id user ID
+#' @param foodname character string representing the food item of interest
+#' @param timeLength number of minutes for the glucose record to show after the food was eaten.
+#' @return dataframe
+#' @export
+food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon"){
+
+
+  f <- glucose_for_food_df(user_id = user_id, foodname=foodname)
+
+
+  # original_levels <- factor(f$user_id) # to prevent a conversion of id_user to char later
+
+  ID = user_id
+
+  df <- NULL
+  for(user in ID){
+    g <- f %>% filter(user_id==user)
+    for(t in g$Start){
+      new_segment_df <- glucose_df_for_users_at_time(user_id =user, startTime = lubridate::as_datetime(t,tz=Sys.timezone())) %>%
+        mutate(meal=sprintf("%s%s-%i/%i",
+                            substring(username_for_id(user),1,1),
+                            str_split(username_for_id(user),
+                                      " ")[[1]][2],
+                            month(as_datetime(t)),
+                            day(as_datetime(t))),
+               foodname = foodname,
+               user_id = factor(user_id)) #user_id=factor(user_id, levels = original_levels))
+
+      df <- bind_rows(df,make_zero_time_df(new_segment_df))
+    }
+  }
+  return(df)
+}
+
+
+bind_rows(
+  food_times_df(lookup_id_from_name("Ayumi"),foodname = "kind,"),
+  food_times_df(lookup_id_from_name("Ayumi"),foodname = "Real food")
+) %>% filter(!is.na(value)) %>% ggplot(aes(t,value, color = meal)) + geom_line(size = 2)
 
 
 
-food_times_df(user_id=1234,foodname="blueberries") %>% filter(!is.na(value)) %>% distinct() %>%  # %>%
-  group_by(meal) %>%
-  mutate(auc = DescTools::AUC(t,value-first(value)))
-  #mutate(auc = sum((lag(value)-value)*(t-lag(t)), na.rm = TRUE))
-
-m %>% group_by(meal) %>% summarize(auc = DescTools::AUC(t,value-first(value)))
-
-  summarize(auc = DescTools::AUC(t,value-first(value)))
-
-m <- food_times_df(user_id=1234,foodname="blueberries") %>% filter(!is.na(value)) %>% distinct()
-m %>% group_by(meal) %>%  summarize(auc = sum((lag(value)-value)*(t-lag(t)), na.rm = TRUE))
-
-######
-
-tbl(con, "glucose_records") %>% pull(user_id) %>% unique()# %>% filter(user_id == 1234) %>% collect() # %filter(time == max(time))
-#
-rs_file <- file.path("/Users/sprague/OneDrive/Ensembio/Personal Science/Partners/Tastermonial/data/RichardSprague_glucose_8-10-2021.csv")
-rs_file <- file.path("/Users/sprague/OneDrive/General/Health/RichardSprague_glucose.csv")#
-#
-rs_g <- glucose_df_from_libreview_csv(rs_file, user_id = 1234)
-notes_df_from_glucose_table(user_id=1234)
-
-DBI::dbWriteTable(con, name = "glucose_records",
-                  value = rs_g, row.names = FALSE, append = TRUE)
-
-DBI::dbWriteTable(con, name = "notes_records",
-                  value = notes_df_from_glucose_table(user_id=1234), row.names = FALSE, append = TRUE)
-
-notes_df_from_glucose_table(user_id=1234)
-#
-# pop_tart_start <- rs_g %>% filter(stringr::str_detect(food, "Pop-Tart")) %>% pull(time)
-#
-# pt <- rs_g %>% filter(time >= pop_tart_start) %>%
-#   filter(time <= (pop_tart_start + minutes(160)))
-#
-# auc_calc(pt)
-#
-# pt1 <- pt %>% transmute(t = as.numeric(time - pop_tart_start)/60,
-#                         value = value,
-#                         meal="Pop-Tarts™",
-#                         user_id = factor(1235))
-# pt1
-# plot_food_compare(food_times = filter(pt1, !is.na(value)), foodname = "Pop-Tarts™") +
-#   labs(title = "Glucose Levels", subtitle = sprintf("AUC=%.2f",auc_calc(pt)))
-#
-#
-# glucose_df_from_db() %>%
-#   filter(!is.na(food)) %>%
-#   transmute(food = stringr::str_replace(food,"Notes=","")) %>%
-#   group_by(food) %>% add_count() %>%
-#   filter(n < 10 & n > 3)
-#
-# plot_food_compare(food_times = food_times_df(user_id = 1234, foodname = "beer"), foodname = "beer")
