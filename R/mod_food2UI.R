@@ -46,28 +46,33 @@ mod_food2Server <- function(id,  glucose_df, title = "Name") {
     observe(
       cat(stderr(), sprintf("username=%s \n",ID()))
     )
+    food_df <- reactive(bind_rows(food_times_df(ID(),
+                                       foodname = input$food_name1),
+                         food_times_df(ID(),
+                                       foodname = input$food_name2)) %>%
+      filter(!is.na(value)))
     output$libreview <- renderPlot({
       input$submit_foods
-      bind_rows(food_times_df(ID(),
-                              foodname=isolate(input$food_name1)),
-                food_times_df(ID(),
-                              foodname=isolate(input$food_name2))) %>%
-        filter(!is.na(value)) %>% ggplot(aes(t,value, color = foodname)) + geom_line(size = 2)
+      if (input$normalize) {
+        g <- food_df() %>% group_by(meal) %>% arrange(t) %>% mutate(value = value-first(value)) %>%
+          ungroup() %>%  arrange(meal, t) %>%
+          ggplot(aes(t, value, color = foodname)) + geom_line(size = 2)
+      } else
+      g <-
+        food_df() %>% ggplot(aes(t, value, color = foodname)) + geom_line(size = 2)
+      g
 
     })
     output$auc_table <- renderDataTable({
       input$submit_foods
-      bind_rows(food_times_df(ID(),
-                              foodname=isolate(input$food_name1)),
-                food_times_df(ID(),
-                              foodname=isolate(input$food_name2))) %>%
-        filter(!is.na(value)) %>% distinct() %>%  # %>%
+      food_df() %>% distinct() %>%
         group_by(meal, foodname) %>%
         summarize(
                   auc = DescTools::AUC(t,value-first(value)),
                   min = min(value),
                   max = max(value),
-                  rise = last(value) - first(value)) %>%
+                  rise = last(value) - first(value),
+                  .groups = 'drop') %>%
         #summarize(auc = sum((lag(value)-value)*(t-lag(t)), na.rm = TRUE)) %>%
         arrange(auc)
 
@@ -87,4 +92,4 @@ demo_food2 <- function(){
 
 }
 
-#demo_food2()
+if(interactive()) demo_food2()
