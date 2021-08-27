@@ -9,10 +9,17 @@ mod_food2UI <- function(id) {
   ns <- NS(id)
 
   sidebarLayout(
-    sidebarPanel(    textInput(ns("food_name1"), label = "Food 1", value = "Real Food Bar"),
-                     textInput(ns("food_name2"), label = "Food 2", value = "Kind, nuts & Spices"),
-                     actionButton(ns("submit_foods"), label = "Submit Foods"),
-                     checkboxInput(ns("normalize"), label = "Normalize")
+    sidebarPanel(
+      selectInput(
+        ns("user_id"),
+        label = "User Name",
+        choices = with(user_df_from_libreview, paste(first_name, last_name)),
+        selected = "Ayumi Blystone"
+      ),
+      textInput(ns("food_name1"), label = "Food 1", value = "Real Food Bar"),
+      textInput(ns("food_name2"), label = "Food 2", value = "Kind, nuts & Spices"),
+      actionButton(ns("submit_foods"), label = "Submit Foods"),
+      checkboxInput(ns("normalize"), label = "Normalize")
     ),
     mainPanel(plotOutput(ns("libreview")),
               tableOutput(ns("auc_table")))
@@ -33,7 +40,10 @@ mod_food2Server <- function(id,  glucose_df, title = "Name") {
 
   moduleServer(id, function(input, output, session) {
 
-    #foodname <- input$food_name
+    ID<- reactive( {message(paste("Selected User", isolate(input$user_id)))
+      lookup_id_from_name(input$user_id[1])}
+    )
+
     output$libreview <- renderPlot({
       input$submit_food
       plot_food_compare(food_times = food_times_df(user_id = user_df_from_libreview$user_id,
