@@ -19,7 +19,8 @@ mod_food2UI <- function(id) {
       textInput(ns("food_name1"), label = "Food 1", value = "Real Food Bar"),
       textInput(ns("food_name2"), label = "Food 2", value = "Kind, nuts & Spices"),
       actionButton(ns("submit_foods"), label = "Submit Foods"),
-      checkboxInput(ns("normalize"), label = "Normalize")
+      checkboxInput(ns("normalize"), label = "Normalize"),
+      downloadButton(ns("downloadFood_df"), label = "Download Results")
     ),
     mainPanel(plotOutput(ns("libreview")),
               dataTableOutput(ns("auc_table")))
@@ -47,10 +48,22 @@ mod_food2Server <- function(id,  glucose_df, title = "Name") {
       cat(stderr(), sprintf("username=%s \n",ID()))
     )
     food_df <- reactive(bind_rows(food_times_df(user_id = ID(),
-                                       foodname = input$food_name1),
+                                                foodname = input$food_name1),
                                   food_times_df(user_id = ID(),
-                                       foodname = input$food_name2)) %>%
-      filter(!is.na(value)))
+                                                foodname = input$food_name2)) %>%
+                          filter(!is.na(value)))
+
+    output$downloadFood_df <-
+      downloadHandler(
+        filename = function() {
+          sprintf("Food_data-%s-%s.csv", ID(), Sys.Date())
+        },
+        content = function(file) {
+          write_csv(food_df(), file)
+        }
+      )
+
+
     output$libreview <- renderPlot({
       input$submit_foods
       if (input$normalize) {
