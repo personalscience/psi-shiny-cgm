@@ -351,7 +351,7 @@ normalize_value <- function(df){
 #' @param timeLength number of minutes for the glucose record to show after the food was eaten.
 #' @return dataframe
 #' @export
-food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon"){
+old_food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon"){
 
 
   f <- glucose_for_food_df(user_id = user_id, foodname=foodname)
@@ -390,6 +390,85 @@ food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermelon")
   }
   return(df)
 }
+
+#' @title Glucose values after eating a specific food
+#' @description
+#' return a dataframe of the Glucose values for a `timeLength`
+#' following `foodname` appearing in `notes_records`.
+#' This function calls the database directly
+#' and is intended to work standalone, without other functions.
+#' @param conn_args database connection
+#' @param user_id user ID
+#' @param foodname character string representing the food item of interest
+#' @param timeLength number of minutes for the glucose record to show after the food was eaten.
+#' @return dataframe
+#' @export
+food_times_df <-
+  function(conn_args = config::get("dataconnection"),
+           user_id = NULL,
+           timeLength = 120,
+           foodname = "watermelon",
+           db_filter = function(x) {
+             x
+           }) {
+    con <- DBI::dbConnect(
+      drv = conn_args$driver,
+      user = conn_args$user,
+      host = conn_args$host,
+      port = conn_args$port,
+      dbname = conn_args$dbname,
+      password = conn_args$password
+    )
+
+    if (is.null(user_id)){
+    notes_df <-
+      tbl(con, "notes_records") %>% collect() %>%  db_filter() %>%
+      filter(stringr::str_detect(
+        stringr::str_to_lower(Comment),
+        stringr::str_to_lower(foodname)
+      ))}
+    else {
+      ID = user_id
+      notes_df <-
+        tbl(con, "notes_records") %>% filter(user_id == ID) %>%  collect() %>%
+        filter(stringr::str_detect(
+          stringr::str_to_lower(Comment),
+          stringr::str_to_lower(foodname)
+        ))
+    }
+
+    df <- NULL
+
+    users <- unique(notes_df$user_id)
+
+    for (user in users) {
+      f <- tbl(con, "glucose_records") %>% filter(user_id == user) %>% filter(!is.na(value))
+      times <- notes_df %>% filter(user_id == user)  %>% pull(Start)
+      for (atime in times) {
+
+        t0 <- as_datetime(atime)
+        tl <- as_datetime(t0 + minutes(timeLength))
+
+        new_df <- f %>%
+          filter(time >= t0 & time <= tl) %>% collect() %>%
+          transmute(t = as.numeric(time - min(time))/60,
+                    value = value,
+                    meal=sprintf("%s%s-%i/%i",
+                                 substring(username_for_id(user),1,1),
+                                 str_split(username_for_id(user),
+                                           " ")[[1]][2],
+                                 month(as_datetime(atime)),
+                                 day(as_datetime(atime))),
+                    foodname = foodname,
+                    user_id = factor(user_id)) #user_id=factor(user_id, levels = original_levels))
+        df <- bind_rows(df,new_df)
+
+      }
+    }
+
+    return(df)
+
+  }
 
 
 # DB queries ----

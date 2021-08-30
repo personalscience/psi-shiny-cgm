@@ -61,20 +61,8 @@ new_food_times_df <-
                                       " ")[[1]][2],
                             month(as_datetime(atime)),
                             day(as_datetime(atime))),
-               foodname = sprintf("%s-%i/%i",
-                                  foodname,
-                                  month(as_datetime(atime)),
-                                  day(as_datetime(atime))),
+               foodname = foodname,
                user_id = factor(user_id)) #user_id=factor(user_id, levels = original_levels))
-        #
-
-        # df <- bind_rows(df, transmute(new_df,
-        #                               t=zero_time(time),
-        #                               value=value,
-        #                               meal=meal,
-        #                               foodname = foodname,
-        #                               user_id=user_id))
-
        df <- bind_rows(df,new_df)
 
       }
@@ -99,6 +87,9 @@ notes_df <-
 system.time(new_food_times_df(foodname = "blueberries"))
 system.time(food_times_df(foodname="blueberries"))
 
+
+new_food_times_df(foodname = "blueberries") %>% distinct(user_id)
+new_food_times_df(foodname = "blueberries", db_filter = function(x) {x[["user_id"]]==1234})
 n <- new_food_times_df(foodname = "blueberries") #%>% group_by(meal) %>% arrange(t) %>% summarize(t, value)
   # group_by(meal) %>% arrange(time) %>%
   # transmute(t=time - first(time),

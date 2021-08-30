@@ -34,14 +34,12 @@ mod_foodServer <- function(id,  glucose_df, title = "Name") {
     #foodname <- input$food_name
     output$libreview <- renderPlot({
       input$submit_food
-      plot_food_compare(food_times = food_times_df(user_id = user_df_from_libreview$user_id,
-                                                   foodname = isolate(input$food_name)),
+      plot_food_compare(food_times = food_times_df(foodname = isolate(input$food_name)),
                         foodname = isolate(input$food_name))
     })
     output$auc_table <- renderTable({
       input$submit_food
-      food_times_df(user_id = user_df_from_libreview$user_id,
-                    foodname = isolate(input$food_name)) %>% filter(!is.na(value)) %>% distinct() %>%  # %>%
+      food_times_df(foodname = isolate(input$food_name)) %>% filter(!is.na(value)) %>% distinct() %>%  # %>%
         group_by(meal) %>%
         summarize(auc = DescTools::AUC(t,value-first(value)),
                   min = min(value),
@@ -66,4 +64,4 @@ demo_food <- function(){
 
 }
 
-#demo_food()
+if(interactive()) demo_food()
