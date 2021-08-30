@@ -11,10 +11,11 @@ mod_foodUI <- function(id) {
   sidebarLayout(
     sidebarPanel(    textInput(ns("food_name"), label = "Food", value = "blueberries"),
                      actionButton(ns("submit_food"), label = "Submit Food"),
-                     checkboxInput(ns("normalize"), label = "Normalize")
+                     checkboxInput(ns("normalize"), label = "Normalize"),
+                     downloadButton(ns("downloadFood_df"), label = "Download Results")
     ),
     mainPanel(plotOutput(ns("libreview")),
-             tableOutput(ns("auc_table")))
+             dataTableOutput(ns("auc_table")))
   )
 }
 
@@ -31,15 +32,28 @@ mod_foodServer <- function(id,  glucose_df, title = "Name") {
 
   moduleServer(id, function(input, output, session) {
 
+
+    food_df <- reactive(food_times_df(foodname = input$food_name) %>% filter(!is.na(value)))
+
     #foodname <- input$food_name
     output$libreview <- renderPlot({
       input$submit_food
-      plot_food_compare(food_times = food_times_df(foodname = isolate(input$food_name)),
+      plot_food_compare(food_times = food_df(),
                         foodname = isolate(input$food_name))
     })
-    output$auc_table <- renderTable({
+
+    output$downloadFood_df <-
+      downloadHandler(
+        filename = function() {
+          sprintf("Food_data-%s-%s.csv", input$food_name, Sys.Date())
+        },
+        content = function(file) {
+          write_csv(food_df(), file)
+        })
+
+    output$auc_table <- renderDataTable({
       input$submit_food
-      food_times_df(foodname = isolate(input$food_name)) %>% filter(!is.na(value)) %>% distinct() %>%  # %>%
+      food_df() %>% distinct() %>%
         group_by(meal) %>%
         summarize(auc = DescTools::AUC(t,value-first(value)),
                   min = min(value),
