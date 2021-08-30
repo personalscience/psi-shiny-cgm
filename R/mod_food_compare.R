@@ -33,7 +33,12 @@ mod_foodServer <- function(id,  glucose_df, title = "Name") {
   moduleServer(id, function(input, output, session) {
 
 
-    food_df <- reactive(food_times_df(foodname = input$food_name) %>% filter(!is.na(value)))
+    all_food_df <- reactive(food_times_df(foodname = input$food_name) %>% filter(!is.na(value)))
+
+    food_df <-  reactive(if (input$normalize) {
+      all_food_df() %>% group_by(meal) %>% arrange(t) %>% mutate(value = value-first(value)) %>%
+        ungroup() %>%  arrange(meal, t)
+    } else  all_food_df())
 
     #foodname <- input$food_name
     output$libreview <- renderPlot({
