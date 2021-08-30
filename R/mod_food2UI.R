@@ -46,9 +46,9 @@ mod_food2Server <- function(id,  glucose_df, title = "Name") {
     observe(
       cat(stderr(), sprintf("username=%s \n",ID()))
     )
-    food_df <- reactive(bind_rows(food_times_df(ID(),
+    food_df <- reactive(bind_rows(food_times_df(user_id = ID(),
                                        foodname = input$food_name1),
-                         food_times_df(ID(),
+                                  food_times_df(user_id = ID(),
                                        foodname = input$food_name2)) %>%
       filter(!is.na(value)))
     output$libreview <- renderPlot({
@@ -56,10 +56,10 @@ mod_food2Server <- function(id,  glucose_df, title = "Name") {
       if (input$normalize) {
         g <- food_df() %>% group_by(meal) %>% arrange(t) %>% mutate(value = value-first(value)) %>%
           ungroup() %>%  arrange(meal, t) %>%
-          ggplot(aes(t, value, color = foodname)) + geom_line(size = 2)
+          ggplot(aes(t, value, color = meal)) + geom_line(size = 2)
       } else
       g <-
-        food_df() %>% ggplot(aes(t, value, color = foodname)) + geom_line(size = 2)
+        food_df() %>% ggplot(aes(t, value, color = meal)) + geom_line(size = 2)
       g
 
     })

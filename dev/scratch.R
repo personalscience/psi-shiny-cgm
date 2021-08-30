@@ -100,5 +100,16 @@ n <- new_food_times_df(foodname = "blueberries") #%>% group_by(meal) %>% arrange
 
 
 x <- food_times_df(foodname="blueberries")
+food_times_df(foodname="Real Food Bar")
+
+food_times_df(user_id = c(1234), foodname="Real") %>%
+  ggplot(aes(x=t,y=value,color=meal)) + geom_line()
+
+
+food_times_df(user_id = 1002, foodname="Real Food") %>%
+  group_by(meal) %>% arrange(t) %>% summarize(t,meal,value, user_id) #%>%
+  ggplot(aes(x=t,y=value,color=meal)) + geom_line()
+
+  #ggplot(aes(x=t,y=value, color = user_id)) + geom_line()
 
 #new_food_times_df(foodname = "blueberries") %>% arrange(time)# %>% group_by(meal) %>% arrange(time)

@@ -430,7 +430,7 @@ food_times_df <-
     else {
       ID = user_id
       notes_df <-
-        tbl(con, "notes_records") %>% filter(user_id == ID) %>%  collect() %>%
+        tbl(con, "notes_records") %>% filter(user_id %in% ID) %>%  collect() %>%
         filter(stringr::str_detect(
           stringr::str_to_lower(Comment),
           stringr::str_to_lower(foodname)
@@ -453,12 +453,13 @@ food_times_df <-
           filter(time >= t0 & time <= tl) %>% collect() %>%
           transmute(t = as.numeric(time - min(time))/60,
                     value = value,
-                    meal=sprintf("%s%s-%i/%i",
+                    meal=sprintf("%s%s-%i/%i-%s",
                                  substring(username_for_id(user),1,1),
                                  str_split(username_for_id(user),
                                            " ")[[1]][2],
                                  month(as_datetime(atime)),
-                                 day(as_datetime(atime))),
+                                 day(as_datetime(atime)),
+                                 foodname),
                     foodname = foodname,
                     user_id = factor(user_id)) #user_id=factor(user_id, levels = original_levels))
         df <- bind_rows(df,new_df)
