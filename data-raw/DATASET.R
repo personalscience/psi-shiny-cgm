@@ -11,7 +11,7 @@ usethis::use_data(sample_libreview_df, overwrite = TRUE)
 #' @description A Libreview "practice" stores all its user information in a single
 #' CSV file, which this function will convert into a canonical dataframe.
 #' @param file the main file downloaded from a Libreview practice ID
-user_df_from_csv <- function(file = system.file("extdata", package = "psiCGM", "Tastermonial_allPatients_dashboard.csv")){
+user_df_from_csv <- function(file = file.path(here::here(), "inst", "extdata","Tastermonial_allPatients_dashboard.csv")){
   user_df <- readr::read_csv(file = file,
                              skip =1,
                              col_types = cols()) %>%
