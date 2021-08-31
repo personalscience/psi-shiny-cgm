@@ -115,9 +115,4 @@ food_times_df(user_id = 1002, foodname="Real Food") %>%
 #new_food_times_df(foodname = "blueberries") %>% arrange(time)# %>% group_by(meal) %>% arrange(time)
 
 
-name_from_libreview_file(file.path(config::get("tastermonial")$datadir, "Robert Lewis_glucose_8-31-2021.csv"))
-
-exceptions <- read_csv(file.path(file.path(config::get("tastermonial")$datadir,
-                                           "Tastermonial_Exceptions.csv"))) %>%
-  mutate(fullname=paste(first_name, last_name))
-
+load_libreview_csv_from_directory()

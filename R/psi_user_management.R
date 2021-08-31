@@ -28,6 +28,8 @@ user_df_from_db <- function(conn_args = config::get("dataconnection")){
 #'@export
 username_for_id <- function(user_id) {
   ID = user_id
+  if (ID == 0) return("Unknown Name")
+  else
   user_df_from_libreview %>% filter(user_id == ID)  %>%
     select(first_name,last_name) %>%
     as.character() %>%
