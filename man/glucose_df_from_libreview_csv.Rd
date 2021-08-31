@@ -6,13 +6,16 @@
 \usage{
 glucose_df_from_libreview_csv(
   file = system.file("extdata", package = "psiCGM", "Firstname2Lastname2_glucose.csv"),
-  user_id = 1234
+  user_id = 1234,
+  tz = Sys.timezone()
 )
 }
 \arguments{
 \item{file}{path to a valid Libreview CSV file}
 
 \item{user_id}{new user ID to be appended to the dataframe}
+
+\item{tz}{time zone}
 }
 \value{
 a canonical glucose value dataframe

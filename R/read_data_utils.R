@@ -23,13 +23,15 @@ NOTES_COLUMNS <- c("Sleep", "Event", "Food","Exercise")
 #' @return a canonical glucose value dataframe
 #' @param file path to a valid Libreview CSV file
 #' @param user_id new user ID to be appended to the dataframe
+#' @param tz time zone
 #' @export
 #' @import readr magrittr tibble
 #' @import lubridate
 glucose_df_from_libreview_csv <- function(file=system.file("extdata",
                                                            package = "psiCGM",
                                                            "Firstname2Lastname2_glucose.csv"),
-                                          user_id = 1234) {
+                                          user_id = 1234,
+                                          tz = Sys.timezone()) {
 
 
   firstline <- readLines(con = file, 1) %>%
@@ -40,7 +42,7 @@ glucose_df_from_libreview_csv <- function(file=system.file("extdata",
   glucose_raw <-
     readr::read_csv(file, skip = skip_lines, col_types = "cccdddddcddddcddddd") %>%
     transmute(
-      timestamp = lubridate::mdy_hm(`Device Timestamp`, tz = Sys.timezone()),
+      timestamp = lubridate::mdy_hm(`Device Timestamp`, tz = tz),
       record_type = `Record Type`,
       glucose_historic = `Historic Glucose mg/dL`,
       glucose_scan = `Scan Glucose mg/dL`,
