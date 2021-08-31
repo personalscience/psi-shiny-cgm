@@ -46,7 +46,7 @@ name_from_libreview_file <- function(filepath) {
   if (first2[1] %>% str_detect("Patient"))
   {name <- str_split(first2[2],pattern=",")[[1]][1]}
   else name <- str_split(first2[1],pattern=",")[[1]][5]
-  return(name)
+  return(str_squish(name))
 }
 
 #' @title user_id of a valid name string
