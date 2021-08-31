@@ -80,14 +80,21 @@ load_libreview_csv_from_directory <- function(path = config::get("tastermonial")
 
   datafiles <- list.files(path)
   datafiles <- datafiles[datafiles %>% str_detect("glucose")]
+  exceptions <- read_csv(file.path(path,"Tastermonial_Exceptions.csv")) %>% mutate(fullname=paste(first_name, last_name))
 
   df <- NULL
   for (d in datafiles) {
     f <-  file.path(path, d)
-    ID <- lookup_id_from_name(name_from_libreview_file(f))
+    libreview_name <- name_from_libreview_file(f)
+    new_tz <-  if (libreview_name %in% exceptions$fullname) {
+      new_tz <- filter(exceptions,fullname == libreview_name) %>% pull(timezone)
+      if(!is.null(new_tz)) new_tz else Sys.timezone()
+    } else Sys.timezone()
+    ID <- lookup_id_from_name(libreview_name)
     message(sprintf("Reading ID = %s", ID))
     g_df <- glucose_df_from_libreview_csv(file = f,
-                                          user_id = ID)
+                                          user_id = ID,
+                                          new_tz)
     df <- bind_rows(df, g_df)
   }
   return(df)
