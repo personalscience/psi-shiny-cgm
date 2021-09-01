@@ -8,6 +8,7 @@ food_times_df(
   conn_args = config::get("dataconnection"),
   user_id = NULL,
   timeLength = 120,
+  prefixLength = 0,
   foodname = "watermelon",
   db_filter = function(x) {     x }
 )
@@ -18,6 +19,8 @@ food_times_df(
 \item{user_id}{user ID}
 
 \item{timeLength}{number of minutes for the glucose record to show after the food was eaten.}
+
+\item{prefixLength}{number of additional minutes to add before the starttime.}
 
 \item{foodname}{character string representing the food item of interest}
 }

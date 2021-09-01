@@ -245,12 +245,14 @@ notes_df_from_notes_table <- function(conn_args=config::get("dataconnection"),
 #' @param user_id user ID
 #' @param foodname character string representing the food item of interest
 #' @param timeLength number of minutes for the glucose record to show after the food was eaten.
+#' @param prefixLength number of additional minutes to add before the starttime.
 #' @return dataframe
 #' @export
 food_times_df <-
   function(conn_args = config::get("dataconnection"),
            user_id = NULL,
            timeLength = 120,
+           prefixLength = 0,
            foodname = "watermelon",
            db_filter = function(x) {
              x
@@ -290,12 +292,12 @@ food_times_df <-
       times <- notes_df %>% filter(user_id == user)  %>% pull(Start)
       for (atime in times) {
 
-        t0 <- as_datetime(atime)
-        tl <- as_datetime(t0 + minutes(timeLength))
+        t0 <- as_datetime(atime) - minutes(prefixLength)
+        tl <- as_datetime(t0 + minutes(timeLength + prefixLength))
 
         new_df <- f %>%
           filter(time >= t0 & time <= tl) %>% collect() %>%
-          transmute(t = as.numeric(time - min(time))/60,
+          transmute(t = as.numeric(time - min(time))/60 - prefixLength,
                     value = value,
                     meal=sprintf("%s%s-%i/%i-%s",
                                  substring(username_for_id(user),1,1),
