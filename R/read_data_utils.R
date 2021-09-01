@@ -71,13 +71,17 @@ glucose_df_from_libreview_csv <- function(file=system.file("extdata",
 #' @param user_id user ID to associate with this dataframe
 #' @return dataframe for a valid notes CSV file
 #' @export
-notes_df_from_csv <- function(file = file.path("inst/extdata/FirstName1Lastname1_notes.csv"),
+notes_df_from_csv <- function(file=system.file("extdata", package="psiCGM", "FirstName1Lastname1_notes.csv"),
                               user_id = 1235) {
 
-  notes <- read_csv(file,
-                    col_types = cols(Start = col_datetime(format = "%m/%d/%y %H:%M"),
-                                     End = col_datetime(format = "%m/%d/%y %H:%M"),
-                                     Activity = col_factor(levels = NOTES_COLUMNS)))
+
+  notes <-   read_csv(file) %>%
+    transmute(Start = mdy_hm(Start, tz = Sys.timezone()),
+              End = mdy_hm(End, tz = Sys.timezone()),
+              Activity = factor(Activity, levels = NOTES_COLUMNS),
+              Comment = Comment,
+              Z = Z    )
+
 
   notes$Start <- lubridate::force_tz(notes$Start, tzone=Sys.timezone())
   notes$End <- lubridate::force_tz(notes$End, tzone=Sys.timezone())
