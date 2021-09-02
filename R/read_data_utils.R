@@ -299,6 +299,11 @@ food_times_df <-
           filter(time >= t0 & time <= tl) %>% collect() %>%
           transmute(t = as.numeric(time - min(time))/60 - prefixLength,
                     value = value,
+                    username = username_for_id(user),
+                    date_ch = sprintf("%i/%i",
+                                      month(as_datetime(atime)),
+                                      day(as_datetime(atime))),
+                    timestamp = as_datetime(atime),
                     meal=sprintf("%s%s-%i/%i-%s",
                                  substring(username_for_id(user),1,1),
                                  str_split(username_for_id(user),
