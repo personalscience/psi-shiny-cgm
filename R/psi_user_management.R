@@ -76,7 +76,7 @@ lookup_id_from_name <- function(name) {
 #' add that to the dataframe.
 #' Assumes it's a valid file if it has the string "glucose" in its name.
 #' @param path file path to a directory of libreview CSV files.
-#' @return dataframe including `user-id`
+#' @return dataframe including `user_id` matching those for data in the notes_records
 #' @export
 load_libreview_csv_from_directory <- function(path = config::get("tastermonial")$datadir) {
 

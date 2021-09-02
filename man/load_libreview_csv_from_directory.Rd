@@ -10,7 +10,7 @@ load_libreview_csv_from_directory(path = config::get("tastermonial")$datadir)
 \item{path}{file path to a directory of libreview CSV files.}
 }
 \value{
-dataframe including \code{user-id}
+dataframe including \code{user_id} matching those for data in the notes_records
 }
 \description{
 Read glucose files in \code{path} and return one big dataframe with all glucose values.
