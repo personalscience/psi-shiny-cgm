@@ -1,6 +1,6 @@
 # Personal Science Shiny CGM
 
-Latest update: Aug 4, 2021
+Latest update: Sept 2, 2021
 
 This is an R Shiny package that will plot the CGM results from a Freestyle Libre Libreview CSV file.
 
@@ -42,21 +42,7 @@ You will need the database `qsdb` in your Postgres instance. You'll also need a 
 -   `glucose_records` which stores the glucose data for each user.
 -   `notes_records` for timestamped information about foods, activities, or other events per user.
 
-Run this script to automatically generate the database and tables required by the app.
-
-``` r
-source("dev/psi_db_create.r")
-```
-
-In the directory `config::get("tastermonial")$datadir`, place a series of `.csv` files that you downloaded from the Libreview Practice portal.
-
-Convert that directory of `.csv` files into database records, and upload them to the database with this script:
-
-``` r
-source("dev/psi_db_load.R")
-```
-
-*Important*: this script will completely nuke the relevant tables and start the database from scratch.
+In an effort to make the app less dependent on a specific database, this repo doesn't contain scripts to load the data. For the Tastermonial implementation, which includes db-loading scripts, see <https://github.com/personalscience/taster>
 
 ## User database
 
@@ -70,7 +56,7 @@ Until a "real" user database is available, you should ensure that `user_df_from_
 
 Many of the tests rely on a separate database called `testdb`. You'll find that in `config::get("dataconnection")$dbname` if you `Sys.setenv(R_CONFIG_ACTIVE = "localtest")`
 
-To generate the database, run the script `psi_db_create.R` with:
+To generate the database, run the script `dev/psi_db_test_load.R` with:
 
 ``` r
 Sys.setenv(R_CONFIG_ACTIVE = "localtest")
