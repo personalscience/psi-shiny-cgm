@@ -2,16 +2,16 @@
 % Please edit documentation in R/extra.R
 \name{normalize_value}
 \alias{normalize_value}
-\title{return a new df where value are normalized to start from zero.}
+\title{normalize with prefixlength}
 \usage{
 normalize_value(df)
 }
 \arguments{
-\item{df}{dataframe}
+\item{df}{a dataframe}
 }
 \value{
 dataframe
 }
 \description{
-return a new df where value are normalized to start from zero.
+Assumes \verb{df includes columns }t\code{and}value`
 }

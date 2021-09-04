@@ -131,7 +131,7 @@ normalize_value <- function(df) {
 
 
 #' @title return a new df where value are normalized to start from zero.
-#' @Description Useful when transforming `food_times_df`, this will reset all time values
+#' @description Useful when transforming `food_times_df`, this will reset all time values
 #' back to offsets from the earliest time in the dataframe.
 #' Assumes a dataframe with column `value`.
 #' @param df dataframe
