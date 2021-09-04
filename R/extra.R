@@ -101,11 +101,45 @@ make_zero_time_df <- function(df){
                                         user_id=user_id))
 }
 
+
+#' @title normalize with prefixlength
+#' @description
+#' Assumes `df includes columns `t` and `value`
+#' @param df a dataframe
+#' @return dataframe
+#' @export
+normalize_value <- function(df) {
+
+  after_start <- df %>% group_by(meal) %>%
+    filter(t>=0) %>%
+    arrange(meal,t) %>%
+    mutate(nvalue = value-first(value)) %>% ungroup()
+
+  before_start <- df %>% group_by(meal) %>%
+    filter(t<0) %>%
+    arrange(meal,t) %>%
+    mutate(nvalue = value - last(value)) %>% ungroup()
+
+  bind_rows(before_start, after_start) %>% group_by(meal,t)
+}
+
+#ft_df0 %>% normalize_value() %>% select(t, value, meal,nvalue,pvalue) %>% arrange(meal,t)
+# ft_df1 %>% normalize_value() %>% arrange(meal,t) %>% select(t,value,nvalue) %>%  View()
+#
+#
+# ft_df0 %>% normalize_value() %>% select(t, value, meal, nvalue) %>% arrange(meal,t)
+
+
 #' @title return a new df where value are normalized to start from zero.
+#' @Description Useful when transforming `food_times_df`, this will reset all time values
+#' back to offsets from the earliest time in the dataframe.
+#' Assumes a dataframe with column `value`.
 #' @param df dataframe
 #' @return dataframe
 #' @export
-normalize_value <- function(df){
+old_normalize_value <- function(df){
+
+
   return(df %>% mutate(value=value-first(value)))
 
 
