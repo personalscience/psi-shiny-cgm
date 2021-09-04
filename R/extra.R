@@ -113,12 +113,12 @@ normalize_value <- function(df) {
   after_start <- df %>% group_by(meal) %>%
     filter(t>=0) %>%
     arrange(meal,t) %>%
-    mutate(nvalue = value-first(value)) %>% ungroup()
+    mutate(value = value-first(value)) %>% ungroup()
 
   before_start <- df %>% group_by(meal) %>%
     filter(t<0) %>%
     arrange(meal,t) %>%
-    mutate(nvalue = value - last(value)) %>% ungroup()
+    mutate(value = value - last(value)) %>% ungroup()
 
   bind_rows(before_start, after_start) %>% group_by(meal,t)
 }

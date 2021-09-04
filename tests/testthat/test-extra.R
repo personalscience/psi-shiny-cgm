@@ -41,7 +41,22 @@ test_that("food_times_df holds correct start time: prefixLength = 0 ",{
                  slice(2) %>% pull(value), 81)
 })
 
+test_that("food_times_df holds correct start time: prefixLength = 0 ",{
+  expect_equal(ft_df0 %>%
+                 group_by(meal) %>%
+                 arrange(meal,t) %>%
+                 ungroup() %>%
+                 slice(2) %>% pull(value), 81)
+})
 
+test_that("normalize_value() works for prefixLength = 0 ",{
+expect_equal(ft_df0 %>% normalize_value() %>% group_by(meal) %>% slice(5) %>% pull(value),
+             c(-2,6,16))
+})
 
+test_that("normalize_value() works for prefixLength = 20 ",{
+  expect_equal(ft_df1 %>% normalize_value() %>% group_by(meal) %>% slice(5) %>% pull(value),
+               c(8,  -51,   3))
+})
 
 Sys.setenv(R_CONFIG_ACTIVE = active_env )
