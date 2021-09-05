@@ -105,4 +105,4 @@ demo_food2 <- function(){
 
 }
 
-if(interactive()) demo_food2()
+#if(interactive()) demo_food2()

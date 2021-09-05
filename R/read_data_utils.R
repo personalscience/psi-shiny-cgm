@@ -57,7 +57,7 @@ glucose_df_from_libreview_csv <- function(file=system.file("extdata",
               scan = glucose_scan,
               hist = glucose_historic,
               strip = strip_glucose,
-              value = dplyr::if_else(is.na(scan),hist,scan),
+              value = hist,
               food = notes) # dplyr::if_else(is.na(notes),notes, paste0("Notes=",notes))) #dplyr::if_else(is.na(notes),"no", "yes"))#paste0("Notes=",notes)))
 
 

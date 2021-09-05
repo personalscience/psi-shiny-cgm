@@ -83,4 +83,4 @@ demo_food <- function(){
 
 }
 
-if(interactive()) demo_food()
+#if(interactive()) demo_food()
