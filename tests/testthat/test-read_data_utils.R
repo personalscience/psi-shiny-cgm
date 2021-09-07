@@ -18,7 +18,7 @@ test_that("Max date is correct",{
 
 test_that("Correct number of meals eating watermelon",{
   expect_equal(nrow(food_times_df() %>% distinct(meal)), 3)
-  expect_equal(nrow(food_times_df(prefixLength=20)),33)
+  expect_equal(nrow(food_times_df(prefixLength=40)),33)
 
 
 })

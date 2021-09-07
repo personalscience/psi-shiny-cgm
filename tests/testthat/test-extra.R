@@ -14,9 +14,10 @@ ft_df1 <- food_times_df(prefixLength = 20, foodname = "blueberries")
 
 
 mealnames_blu <-
-  as_tibble_col(c("RSprague-7/31-blueberries",
-                  "RSprague-8/2-blueberries",
-                  "MSprague-6/5-blueberries"), column_name = "meal")
+  as_tibble_col(c("MSprague-6/5-blueberries",
+                  "RSprague-7/31-blueberries",
+                  "RSprague-8/2-blueberries"
+                  ), column_name = "meal")
 
 
 
@@ -30,15 +31,7 @@ test_that("food_times_df holds correct start time",{
                  group_by(meal) %>%
                  arrange(meal,t) %>%
                  ungroup() %>%
-                 slice(2) %>% pull(value), 64)
-})
-
-test_that("food_times_df holds correct start time: prefixLength = 0 ",{
-  expect_equal(ft_df0 %>%
-                 group_by(meal) %>%
-                 arrange(meal,t) %>%
-                 ungroup() %>%
-                 slice(2) %>% pull(value), 81)
+                 slice(2) %>% pull(value), 71)
 })
 
 test_that("food_times_df holds correct start time: prefixLength = 0 ",{
@@ -51,12 +44,12 @@ test_that("food_times_df holds correct start time: prefixLength = 0 ",{
 
 test_that("normalize_value() works for prefixLength = 0 ",{
 expect_equal(ft_df0 %>% normalize_value() %>% group_by(meal) %>% slice(5) %>% pull(value),
-             c(-2,6,16))
+             c(-4,2,-38))
 })
 
 test_that("normalize_value() works for prefixLength = 20 ",{
   expect_equal(ft_df1 %>% normalize_value() %>% group_by(meal) %>% slice(5) %>% pull(value),
-               c(8,  -51,   3))
+               c(-17,  -14,   -3))
 })
 
 Sys.setenv(R_CONFIG_ACTIVE = active_env )
