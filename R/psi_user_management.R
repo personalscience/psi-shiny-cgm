@@ -29,7 +29,7 @@ username_for_id <- function(user_id) {
   ID = user_id
   if (ID == 0) return("Unknown Name")
   else
-  user_df_from_libreview %>% filter(user_id == ID)  %>%
+  user_df_from_db() %>% filter(user_id == ID)  %>%
     select(first_name,last_name) %>%
     as.character() %>%
     stringr::str_flatten(collapse = " ")
@@ -60,7 +60,7 @@ lookup_id_from_name <- function(name) {
   name_split <- str_split(name, pattern = " ", simplify = TRUE)
   first <- first(name_split)
   last <- paste(name_split[-1], collapse=" ")
-  ID <- user_df_from_libreview %>% filter(first_name == first &
+  ID <- user_df_from_db() %>% filter(first_name == first &
                                             stringr::str_detect(last_name, last)) %>%
     pull(user_id)
   return(if(length(ID)>0) ID else NULL)

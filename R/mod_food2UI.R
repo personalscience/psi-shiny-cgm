@@ -13,8 +13,8 @@ mod_food2UI <- function(id) {
       selectInput(
         ns("user_id"),
         label = "User Name",
-        choices = with(user_df_from_libreview, paste(first_name, last_name)),
-        selected = "Ayumi Blystone"
+        choices = with(user_df_from_db(), paste(first_name, str_match(last_name,"[:alnum:]{2}"))),
+        selected = "Ayumi Bl"
       ),
       textInput(ns("food_name1"), label = "Food 1", value = "Real Food Bar"),
       textInput(ns("food_name2"), label = "Food 2", value = "Kind, nuts & Spices"),
