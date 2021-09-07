@@ -295,8 +295,10 @@ food_times_df <-
         t0 <- as_datetime(atime) - minutes(prefixLength)
         tl <- as_datetime(t0 + minutes(timeLength + prefixLength))
 
-        new_df <- f %>%
-          filter(time >= t0 & time <= tl) %>% collect() %>%
+        filtered_df <- f %>%
+          filter(time >= t0 & time <= tl) %>% collect()
+        if (nrow(filtered_df)==0) new_df <- NULL
+        else new_df <- filtered_df %>%
           transmute(t = as.numeric(time - min(time))/60 - prefixLength,
                     value = value,
                     username = username_for_id(user),
@@ -318,7 +320,8 @@ food_times_df <-
       }
     }
 
-    return(df)
+   if(nrow(df)==0) return(NULL)
+    else return(df)
 
   }
 
