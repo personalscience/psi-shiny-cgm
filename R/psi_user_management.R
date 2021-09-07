@@ -14,8 +14,7 @@ user_df_from_db <- function(conn_args = config::get("dataconnection")){
     password = conn_args$password
   )
 
-  users_df <- table_df_from_db(conn_args = conn_args,
-                               table_name = "user_list" )
+  users_df <- tbl(con, "user_list" ) %>% collect()
 
   DBI::dbDisconnect(con)
   return(users_df)
