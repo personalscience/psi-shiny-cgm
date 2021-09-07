@@ -50,10 +50,3 @@ glucose_df_from_nutrisense <- function(filepath = file.path(config::get("tasterm
   return(glucose_raw)
 }
 
-gf1 <- glucose_df_from_nutrisense(filepath = file.path(config::get("tastermonial")$datadir,
-                                                       "1627653419114_export-SherriJo.csv"))
-
-gf2 <- glucose_df_from_nutrisense(filepath = file.path(config::get("tastermonial")$datadir,
-                                                       "nutrisense_anthony_davis.csv"),
-                                  tz = Sys.timezone())
-gf2$time %>% range()
