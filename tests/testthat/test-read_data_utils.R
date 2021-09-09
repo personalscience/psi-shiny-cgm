@@ -16,6 +16,11 @@ test_that("Max date is correct",{
                as_datetime(1628618640))   # "2021-08-10 18:04:00 UTC"
 })
 
+test_that("food_list_db() includes watermelon",{
+  expect_equal(last(food_list_db()),"Watermelon")
+
+
+})
 test_that("Correct number of meals eating watermelon",{
   expect_equal(nrow(food_times_df() %>% distinct(meal)), 3)
   expect_equal(nrow(food_times_df(prefixLength=40)),33)

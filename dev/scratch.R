@@ -6,7 +6,7 @@ library(lubridate)
 
 #Sys.setenv(R_CONFIG_ACTIVE = "tastercloud")
 #Sys.setenv(R_CONFIG_ACTIVE = "localtest")
-Sys.setenv(R_CONFIG_ACTIVE = "local")
+#Sys.setenv(R_CONFIG_ACTIVE = "local")
 conn_args=config::get("dataconnection")
 con <- DBI::dbConnect(drv = conn_args$driver,
                       user = conn_args$user,
