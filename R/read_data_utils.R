@@ -330,6 +330,7 @@ food_times_df <-
 #' @title List all products consumed by `user_id`
 #' @param user_id vector of user IDs or NULL to show all users
 #' @return character vector of product names sorted alphabetically
+#' @export
 food_list_db <- function(user_id = 1234  ) {
   conn_args <- config::get("dataconnection")
   con <- DBI::dbConnect(

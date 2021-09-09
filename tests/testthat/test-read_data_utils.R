@@ -17,7 +17,7 @@ test_that("Max date is correct",{
 })
 
 test_that("food_list_db() includes watermelon",{
-  expect_equal(last(food_list_db()),"Watermelon")
+  expect_equal(length(food_list_db()),56)
 
 
 })
