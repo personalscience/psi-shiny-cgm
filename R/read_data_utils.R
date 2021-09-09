@@ -320,7 +320,8 @@ food_times_df <-
       }
     }
 
-   if(nrow(df)==0) return(NULL)
+    if(is.null(df)) return(NULL)
+    else if(nrow(df)==0) return(NULL)
     else return(df)
 
   }

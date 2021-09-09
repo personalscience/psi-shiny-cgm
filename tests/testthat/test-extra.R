@@ -20,6 +20,10 @@ mealnames_blu <-
                   ), column_name = "meal")
 
 
+test_that("food_times_df can handle non-existent users", {
+  expect_equal(food_times_df(user_id = -1), NULL)
+})
+
 
 test_that("food_times_df holds correct mealnames",{
   expect_equal(ft_df1 %>% distinct(meal), mealnames_blu)
