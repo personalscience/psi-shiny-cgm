@@ -7,6 +7,20 @@
 active_env <- Sys.getenv("R_CONFIG_ACTIVE")
 Sys.setenv(R_CONFIG_ACTIVE = "localtest")
 
+conn_args <-  config::get("dataconnection")
+  con <- DBI::dbConnect(
+    drv = conn_args$driver,
+    user = conn_args$user,
+    host = conn_args$host,
+    port = conn_args$port,
+    dbname = conn_args$dbname,
+    password = conn_args$password)
+
+glucose_records <- tbl(con,"glucose_records") %>% collect()
+notes_records <- tbl(con, "notes_records") %>% collect()
+
+ftf_df0 <- food_times_df_fast(glucose_records, notes_records, prefixLength = 0)
+
 ft_df0 <- food_times_df(prefixLength = 0)
 
 # 2 user_id and
@@ -27,6 +41,10 @@ test_that("food_times_df can handle non-existent users", {
 
 test_that("food_times_df holds correct mealnames",{
   expect_equal(ft_df1 %>% distinct(meal), mealnames_blu)
+})
+
+test_that("food_times_df_fast holds correct mealnames",{
+  expect_equal(ftf_df1 %>% distinct(meal), mealnames_blu)
 })
 
 
@@ -55,5 +73,6 @@ test_that("normalize_value() works for prefixLength = 20 ",{
   expect_equal(ft_df1 %>% normalize_value() %>% group_by(meal) %>% slice(5) %>% pull(value),
                c(-17,  -14,   -3))
 })
+
 
 Sys.setenv(R_CONFIG_ACTIVE = active_env )
