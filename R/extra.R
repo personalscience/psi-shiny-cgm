@@ -239,11 +239,25 @@ food_times_df_fast <-
            user_id = NULL,
            timeLength = 120,
            prefixLength = 0,
-           foodname = "watermelon",
-           db_filter = function(x) {
-             x
-           }) {
+           foodname = "watermelon") {
 
+
+    if (is.null(user_id)){  # find all foodnames regardless of user_id
+      notes_df <-
+        notes_df  %>%
+        filter(stringr::str_detect(
+          stringr::str_to_lower(Comment),
+          stringr::str_to_lower(foodname)
+        ))}
+    else { # find only those foodname associated with user_id
+      ID = user_id
+      notes_df <-
+        tbl(con, "notes_records") %>% filter(user_id %in% ID) %>%
+        filter(stringr::str_detect(
+          stringr::str_to_lower(Comment),
+          stringr::str_to_lower(foodname)
+        ))
+    }
 
     df <- NULL
 
