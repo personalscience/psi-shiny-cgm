@@ -25,7 +25,7 @@ ft_df0 <- food_times_df(prefixLength = 0)
 
 # 2 user_id and
 ft_df1 <- food_times_df(prefixLength = 20, foodname = "blueberries")
-
+ftf_df1 <- food_times_df_fast(glucose_records, notes_records, prefixLength = 20, foodname = "blueberries")
 
 mealnames_blu <-
   as_tibble_col(c("MSprague-6/5-blueberries",
@@ -58,6 +58,14 @@ test_that("food_times_df holds correct start time",{
 
 test_that("food_times_df holds correct start time: prefixLength = 0 ",{
   expect_equal(ft_df0 %>%
+                 group_by(meal) %>%
+                 arrange(meal,t) %>%
+                 ungroup() %>%
+                 slice(2) %>% pull(value), 81)
+})
+
+test_that("food_times_df_fast holds correct start time: prefixLength = 0 ",{
+  expect_equal(ftf_df0 %>%
                  group_by(meal) %>%
                  arrange(meal,t) %>%
                  ungroup() %>%

@@ -227,7 +227,9 @@ old_food_times_df <- function(user_id = 1235, timeLength=120, foodname="watermel
 #' following `foodname` appearing in `notes_records`.
 #' This function calls the database directly
 #' and is intended to work standalone, without other functions.
-#' @param user_id user ID
+#' @param user_id user ID.  If NULL then assume all users
+#' @param glucose_df a valid glucose dataframe
+#' @param notes_df a valid notes dataframe
 #' @param foodname character string representing the food item of interest
 #' @param timeLength number of minutes for the glucose record to show after the food was eaten.
 #' @param prefixLength number of additional minutes to add before the starttime.

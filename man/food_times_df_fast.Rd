@@ -10,12 +10,15 @@ food_times_df_fast(
   user_id = NULL,
   timeLength = 120,
   prefixLength = 0,
-  foodname = "watermelon",
-  db_filter = function(x) {     x }
+  foodname = "watermelon"
 )
 }
 \arguments{
-\item{user_id}{user ID}
+\item{glucose_df}{a valid glucose dataframe}
+
+\item{notes_df}{a valid notes dataframe}
+
+\item{user_id}{user ID.  If NULL then assume all users}
 
 \item{timeLength}{number of minutes for the glucose record to show after the food was eaten.}
 
