@@ -254,7 +254,7 @@ food_times_df_fast <-
     else { # find only those foodname associated with user_id
       ID = user_id
       notes_df <-
-        tbl(con, "notes_records") %>% filter(user_id %in% ID) %>%
+        notes_df %>% filter(user_id %in% ID) %>%
         filter(stringr::str_detect(
           stringr::str_to_lower(Comment),
           stringr::str_to_lower(foodname)
@@ -266,6 +266,7 @@ food_times_df_fast <-
     users <- unique(notes_df$user_id)
 
     for (user in users) {
+      username <- username_for_id(user)
       f <- glucose_df %>% filter(user_id == user) %>% filter(!is.na(value))
       times <- notes_df %>% filter(user_id == user)  %>% pull(Start)
       for (atime in times) {
@@ -279,14 +280,14 @@ food_times_df_fast <-
         else new_df <- filtered_df %>%
           transmute(t = as.numeric(time - min(time))/60 - prefixLength,
                     value = value,
-                    username = username_for_id(user),
+                    username = username,
                     date_ch = sprintf("%i/%i",
                                       month(as_datetime(atime)),
                                       day(as_datetime(atime))),
                     timestamp = as_datetime(atime),
                     meal=sprintf("%s%s-%i/%i-%s",
-                                 substring(username_for_id(user),1,1),
-                                 str_split(username_for_id(user),
+                                 substring(username,1,1),
+                                 str_split(username,
                                            " ")[[1]][2],
                                  month(as_datetime(atime)),
                                  day(as_datetime(atime)),
