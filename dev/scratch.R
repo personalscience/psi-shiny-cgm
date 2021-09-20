@@ -16,13 +16,60 @@ con <- DBI::dbConnect(drv = conn_args$driver,
                       password = conn_args$password)
 
 
-prods <-
-  tbl(con, "notes_records") %>% filter(Activity == "Food") %>%
-  filter(Start > "2021-06-01") %>% filter(user_id %in% c(1234)) %>% distinct(Comment) %>%
-  collect() %>% pull(Comment)
+G <- auc_example["value"] %>% as_vector()
+t <- auc_example["time"] %>% as_vector()
+A <- rep(0,length(t)-1)
+A
+t
 
-cow <- food_times_df(foodname = "Cream of Wheat")
-cow20 <- food_times_df(prefixLength = 20, foodname = "Cream of Wheat")
-food_times_df(foodname = "Cream of Wheat", prefixLength = 20 )
+G_ <- function(x) {
+  return(G[x+1])
+}
+t_ <- function(x) {
+  return(t[x+1])
+}
 
-cow %>% group_by(meal) %>% slice(1)
+G_(0)
+t_(0)
+t_(5)
+
+
+A[1] <-  ifelse(G_(1) >G_(0),
+                (G_(1) - G_(0)) * (t_(1) - t(0)) /2,
+                0)
+A
+
+x = 2
+
+A[x] <- if(G_(x) >= G_(0) & G_(x-1) >= G_(0)) {
+  ((G_(x) - G_(0)) / 2 + (G_(x-1) - G_(0))/2 )  * (t_(x) - t_(x-1))
+}
+A
+
+x=6
+ifelse(G_(x) >= G_(0) & G_(x-1) >= G_(0),
+  ((G_(x) - G_(0)) / 2 + (G_(x-1) - G_(0))/2 )  * (t_(x) - t_(x-1)),
+  ifelse((G_(x) >= G_(0)) & G_(x-1) < G_(0),
+    ((G_(x) - G_(0))^2)/(G_(x) - G_(x-1)) * (t_(x) - t_(x-1))/2,
+    ifelse((G_(x) < G_(0)) & G_(x-1) >= G_(0),
+           ((G_(x-1) - G_(0))^2) / (G_(x-1) - G_(x))*(t_(x) - t_(x-1))/2,
+           ifelse((G_(x) < G_(0)) & (G_(x-1) < G_(0)),
+                  0,
+                  NULL))))
+
+
+
+x = 4
+G_(x) < G_(0) & G_(x-1) >= G_(0)
+
+((G_(x-1) - G_(0))^2) / (G_(x-1) - G_(x))*(t_(x) - t_(x-1))/2
+x = 6
+
+((G_(x-1) - G_(0))^2) / (G_(x-1) - G_(x))*(t_(x) - t_(x-1))/2
+
+x=7
+(t_(x) ) #- t_(x-1))
+
+t
+A
+G[i]>=G[1]
